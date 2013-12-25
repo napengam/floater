@@ -1,0 +1,131 @@
+@font-face {
+    font-family: 'Gentium Basic';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Gentium Basic'), local('GentiumBasic'), url(http://themes.googleusercontent.com/static/fonts/gentiumbasic/v4/KCktj43blvLkhOTolFn-MZ_RtrTXGeaL_Dia6_H9gNs.woff) format('woff');
+}
+@font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('PT Sans'), local('PTSans-Regular'), url(http://themes.googleusercontent.com/static/fonts/ptsans/v5/LKf8nhXsWg5ybwEGXk8UBQ.woff) format('woff');
+}
+html {
+    font-size:1rem;
+    margin:0;
+    padding:0;
+    font-family: 'Gentium Basic', serif;
+}
+body{ 
+    background:rgba(120, 124, 228, 0.22);
+    margin:0;
+    padding:0;
+    background-image:url(sea.JPG);
+    background-size:cover;
+}
+li>a {
+    color:darkblue;
+    text-decoration:none;
+    font-size:1.17rem;
+    font-weight:bold;
+}
+li{
+    margin-bottom:8px;
+}
+a:hover {
+    color:blue;
+    text-decoration:none;
+}
+hr {	
+    margin:0;padding:0
+}
+.h1 {
+    margin-bottom:0;
+    color:darkslateblue;
+}
+h3 {
+    margin-bottom:8px;
+    color:darkblue;
+}
+.title{
+    font-weight:bold;
+    font-size:1.5rem;
+    width:700px
+}
+.content{
+    margin:0px;
+    width:auto;
+    xheight:642px;
+    /**background:rgba(120, 124, 228, 0.22);**/
+
+}
+.outerDiv{
+    border:1px solid black;
+    border-radius: 8px;
+    box-shadow: -6px -6px 6px #aaaaaa;
+    margin-top:40px;
+    width:auto;                     
+}
+.divhead{
+    text-align:left;
+    padding-right:30px;
+    border-radius: 8px 8px 8px 8px;
+    background:rgba(120, 124, 228, 0.22);
+    border-bottom:1px solid black;
+    padding-left:10px;
+    padding-top:10px;
+    font-family: 'PT Sans';
+}
+.headLine{
+    border-bottom:1px solid blue;
+    color:white;
+    font-size:2rem;
+}
+p{
+    margin-left:20px;
+    width:600px;
+}
+.p{
+    margin-left:20px;
+}
+.small{
+    font-size:0.8rem;
+}
+div {
+    xbackground:rgba(120, 124, 228, 0.22);
+}
+code{
+    font-size:1rem;
+}
+.foot{
+    background:rgba(120, 124, 228, 0.22);
+    text-align:center;
+    clear:both;
+    margin:0;
+    padding-top:10px;
+    border-bottom: 1px solid black; 
+}
+.footText{
+    border-radius: 5px;
+    border-top: 1px solid black;
+    font-size:1em;
+}
+.verticalSpan{  
+    -webkit-transform: rotate(-90deg) ;
+    -moz-transform: rotate(270deg) ;
+    -o-transform: rotate(270deg) ;
+    -ms-transform: rotate(270deg) ;
+    padding:0;
+    margin:0;
+    text-decoration:underline;
+    color:white;
+    font-size:1.8em;
+    border:0px solid black;
+   
+}
+.trans {
+-webkit-transition:All 1s ease;
+-moz-transition:All 1s ease;
+-o-transition:All 1s ease;
+
+}

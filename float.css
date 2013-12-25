@@ -1,0 +1,29 @@
+.outerFloatHead{             
+    margin:0;
+    padding:0;            
+    border-right:0px solid black;             
+    border-left:0px solid black; 
+}
+.floatHead{            
+    margin:0;
+    padding:0px;
+    border-color: black;
+    text-align: center;            
+    position:absolute;
+    border:0;              
+    background:white;                             
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    font-weight:bold; 
+
+}
+.floatCol{            
+    margin:0;
+    padding:0px;
+    border-color: black;
+    text-align: left;            
+    position:absolute;
+    border:0;              
+    background:white;                             
+    border: 1px solid black;                                 
+}
