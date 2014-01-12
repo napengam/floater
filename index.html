@@ -17,9 +17,9 @@
                 }
             }
             addEvent(window, 'load', function() {
-                floatHeader('t1');
-                floatHeader('t2');
-                floatHeader('t3');
+                floatHeader('t1',{ncpth:[1,2],nccol:2});
+                floatHeader('t2',{ncpth:[2],nccol:2});
+                floatHeader('t3',{ncpth:[1],nccol:1});
                 moveToBottom('foot');
             });
         </script>    
@@ -84,7 +84,7 @@
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                         </table>
-
+                            <hr style='width:1px;height:4000px'>
                     </td><td>
                         <table id="t3">
                             <tr><th>Cell0</th><th>Cell1</th><th>Cell2</th><th>Cell3</th></tr>
@@ -104,6 +104,7 @@
                             <tr><td>aaaaaaa</td><td>bbbbbbbbbbbbbbbbbbbbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                         </table>
+                        <hr style='width:3000px'>
                         <table class=table id="t2" >
                             <tr><th>A</th><th>BB</th><th>CCC</th><th>DDD</th></tr>
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
