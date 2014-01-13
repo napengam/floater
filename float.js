@@ -124,7 +124,7 @@ function floatHeader(tableId, head) {
     }
     var mytable, floatoffsetleft = 0
             , row = [], floatPos, cornerPos, columnPos
-            , py, i, nc, nr, th, offsettop, top, height, delta
+            , py, i, nc, nr, th, offsettop, top, height, delta ,lastCellWidth=0
             , k, tf, tlc = {}, lc = {}, lcTop, lcw = 0, theCell, allHeight = 0
             , allHeight2 = 0, tlcw = 0;
 
@@ -178,6 +178,7 @@ function floatHeader(tableId, head) {
             }
         }
     }
+    lastCellWidth=row.cells[nc-1].clientWidth;
     allHeight = row.offsetTop + row.clientHeight;
     ///////////////////////
     //// left column cells  only
@@ -187,7 +188,7 @@ function floatHeader(tableId, head) {
         columnPos = absPos(mytable.rows[k].cells[0]);
         lcTop = columnPos.y;
         delta = lcTop - floatPos.y;
-      
+
         lcw = 0;
         delta = mytable.rows[k].offsetTop;
         for (height = 0, top = 0; k < nr; k++) {
@@ -209,15 +210,13 @@ function floatHeader(tableId, head) {
         lc.style.height = height - delta + 'px';
         lc.style.width = lcw + 'px';
         lc.style.display = 'none';
-
         tlc.style.height = tf.style.height;
-        tlc.rightEdge = floatPos.x + tf.clientWidth - lcw;
+        tlc.rightEdge = floatPos.x + tf.clientWidth - lcw - lastCellWidth;      
         tlc.left = floatoffsetleft;
         tlc.x = floatoffsetleft;
         tlc.style.height = allHeight2 + 'px';
-        tlc.style.width = tlcw+2 + 'px';
+        tlc.style.width = tlcw + 2 + 'px';
         tlc.style.display = 'none';
-
         tf.rightEdge = tlc.rightEdge;
     }
     py = 0;
@@ -227,6 +226,10 @@ function floatHeader(tableId, head) {
     tf.x = floatPos.x;
     tf.y = py + offsettop;
     tf.py = py;
+    tf.left = floatPos.x;
+    tf.top = floatPos.y;
+    tf.right = tf.left + mytable.clientWidth;
+    tf.bottom = tf.top + mytable.clientHeight;
     tf.style.display = 'none';
 
     function scroll() { // does the scrolling 
@@ -298,6 +301,7 @@ function floatHeader(tableId, head) {
                 return;
             }
         }
+
     }
 
     function addEvent(obj, ev, fu) {
