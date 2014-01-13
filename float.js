@@ -56,7 +56,7 @@ function floatHeader(tableId, head) {
         }
         return pos;
     }
-    function createDivHead(mytable, floatoffsetleft) {
+    function createDivHead(mytable, x) {
         var div = document.createElement('div');
         setAtt(div, {id: 'float' + mytable.id,
             className: 'outerFloatHead'}
@@ -64,40 +64,40 @@ function floatHeader(tableId, head) {
         setAtt(div.style, {zIndex: 15,
             width: mytable.clientWidth + 'px',
             position: 'absolute',
-            left: floatoffsetleft + 'px'
+            left: x + 'px'
         }
         );
         return div;
     }
-    function createDivCornerHead(mytable, floatoffsetleft) {
+    function createDivCornerHead(mytable, x) {
         var div = document.createElement('div');
         setAtt(div, {id: 'floatcorner_' + mytable.id,
             className: 'floatCorner'}
         );
         setAtt(div.style, {zIndex: 15,
             position: 'absolute',
-            left: floatoffsetleft + 'px',
+            left: x + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px'}
         );
         return div;
     }
-    function createDivLeftColumn(mytable, floatoffsetleft) {
+    function createDivLeftColumn(mytable, x) {
         var div = document.createElement('div');
         setAtt(div, {id: 'floatleftcolumn_' + mytable.id,
             className: 'outerFloatHead'}
         );
         setAtt(div.style, {zIndex: 12,
             position: 'absolute',
-            left: floatoffsetleft + 'px',
+            left: x + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px'}
         );
         return div;
     }
-    function copyCell(theCell, top, i) {
+    function copyHeaderCell(theCell, top, ci) {
         var div = document.createElement('div');
         setAtt(div, {className: 'floatHead',
             innerHTML: theCell.innerHTML,
-            cellIndex: i}
+            cellIndex: ci}
         );
         setAtt(div.style, {
             position: 'absolute',
@@ -108,11 +108,12 @@ function floatHeader(tableId, head) {
         );
         return div;
     }
-    function copyLeftColumn(theCell, top, i) {
+    function copyLeftColumn(theCell, top, ci, ri) {
         var div = document.createElement('div');
         setAtt(div, {className: 'floatCol',
             innerHTML: theCell.innerHTML,
-            cellIndex: i}
+            cellIndex: ci,
+            rowIndex: ri}
         );
         setAtt(div.style, {
             position: 'absolute',
@@ -122,28 +123,24 @@ function floatHeader(tableId, head) {
         );
         return div;
     }
-    var mytable, floatoffsetleft = 0
-            , row = [], floatPos, cornerPos, columnPos
-            , py, i, nc, nr, th, offsettop, top, height, delta ,lastCellWidth=0
-            , k, tf, tlc = {}, lc = {}, lcTop, lcw = 0, theCell, allHeight = 0
-            , allHeight2 = 0, tlcw = 0;
-
+    var mytable
+            , row = [], floatPos
+            , i, nc, nr, th,  height, delta
+            , k, tf, tlc = {}, lc = {}, lcTop, lcw = 0
+            , tlcw = 0;
     if (typeof head === 'undefined') {
         var head = {ncpth: [], nccol: 0};
     }
-
+    
     mytable = document.getElementById(tableId);
-    theCell = mytable.rows[0].cells[0];
-    floatPos = cornerPos = absPos(mytable);
-    floatoffsetleft = floatPos.x;
-
-    tf = createDivHead(mytable, floatoffsetleft); // entire header
+    floatPos = absPos(mytable);
+    tf = createDivHead(mytable, floatPos.x); // entire header
 
     if (typeof head === 'undefined') {
         var head = {ncpth: [], nccol: 0}; // default 
     } else {
-        tlc = createDivCornerHead(mytable, floatoffsetleft); // top left corener
-        lc = createDivLeftColumn(mytable, floatoffsetleft); //  left column
+        tlc = createDivCornerHead(mytable, floatPos.x); // top left corener
+        lc = createDivLeftColumn(mytable, floatPos.x); //  left column
         tlc.style.top = floatPos.y + 'px';
         tlc.x = 0;
     }
@@ -162,77 +159,67 @@ function floatHeader(tableId, head) {
         }
         row = mytable.rows[k];
         nc = row.cells.length;
-        tlc.rightEdge = floatoffsetleft;
         for (i = 0; i < nc; i++) { // copy content of header cells from table   
-            th = copyCell(row.cells[i], row.cells[i].offsetTop, i);
+            th = copyHeaderCell(row.cells[i], row.cells[i].offsetTop, i);
             tf.appendChild(th);
             th.style.height = row.cells[i].clientHeight + 'px';
             if (k < head.ncpth.length) {// copy cells into top left corner div  
                 if (i < head.ncpth[k]) {
-                    th = copyCell(row.cells[i], row.cells[i].offsetTop, i);
+                    th = copyHeaderCell(row.cells[i], row.cells[i].offsetTop, i);
                     tlc.appendChild(th);
                     th.style.height = row.cells[i].clientHeight + 'px';
-                    allHeight2 = row.offsetTop + row.clientHeight;
                     tlcw = row.cells[i].offsetLeft + row.cells[i].clientWidth;
                 }
             }
         }
     }
-    lastCellWidth=row.cells[nc-1].clientWidth;
-    allHeight = row.offsetTop + row.clientHeight;
+    tf.style.height = row.offsetTop + row.clientHeight +'px';
+    tf.rightEdge = 0;
     ///////////////////////
     //// left column cells  only
     ///////////////////////
     if (head.nccol > 0) {
         document.body.appendChild(lc);
-        columnPos = absPos(mytable.rows[k].cells[0]);
-        lcTop = columnPos.y;
-        delta = lcTop - floatPos.y;
-
+        lcTop = absPos(mytable.rows[k].cells[0]).y;
         lcw = 0;
         delta = mytable.rows[k].offsetTop;
-        for (height = 0, top = 0; k < nr; k++) {
+        for (; k < nr; k++) {
             row = mytable.rows[k];
             nc = row.cells.length;
             for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
-                th = copyLeftColumn(row.cells[i], row.cells[i].offsetTop - delta, i);
+                th = copyLeftColumn(row.cells[i], row.cells[i].offsetTop - delta, i, row.rowIndex);
                 lc.appendChild(th);
-                lcw = row.cells[i].offsetLeft + row.cells[i].clientWidth;
             }
         }
+        lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
         height = row.offsetTop + row.clientHeight;
     }
-    tf.style.height = allHeight + 'px';
-    tf.rightEdge = 0;
-
+  
     if (head.nccol > 0) {
         lc.style.top = lcTop + 'px';
         lc.style.height = height - delta + 'px';
         lc.style.width = lcw + 'px';
         lc.style.display = 'none';
         tlc.style.height = tf.style.height;
-        tlc.rightEdge = floatPos.x + tf.clientWidth - lcw - lastCellWidth;      
-        tlc.left = floatoffsetleft;
-        tlc.x = floatoffsetleft;
-        tlc.style.height = allHeight2 + 'px';
+        tlc.rightEdge = floatPos.x + tf.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
+        tlc.left = floatPos.x;
+        tlc.x = floatPos.x;
+        tlc.style.height = tf.style.heigh;
         tlc.style.width = tlcw + 2 + 'px';
         tlc.style.display = 'none';
         tf.rightEdge = tlc.rightEdge;
     }
-    py = 0;
-    height = mytable.clientHeight;
-    tf.ybottom = floatPos.y + height - tf.clientHeight;
+    tf.ybottom = floatPos.y + mytable.clientHeight - tf.clientHeight - mytable.rows[nr - 1].clientHeight;
     tf.tabtop = floatPos.y;
     tf.x = floatPos.x;
-    tf.y = py + offsettop;
-    tf.py = py;
+    tf.y = floatPos.y;
     tf.left = floatPos.x;
     tf.top = floatPos.y;
     tf.right = tf.left + mytable.clientWidth;
     tf.bottom = tf.top + mytable.clientHeight;
     tf.style.display = 'none';
 
-    function scroll() { // does the scrolling 
+    function scroll() { // does the scrolling as event handler
         var y, x, ypx, xpx;
         y = window.pageYOffset;
         x = head.nccol > 0 ? window.pageXOffset : 0;
@@ -304,17 +291,8 @@ function floatHeader(tableId, head) {
 
     }
 
-    function addEvent(obj, ev, fu) {
-        if (obj.addEventListener) {
-            obj.addEventListener(ev, fu, false);
-        } else {
-            var eev = 'on' + ev;
-            obj.attachEvent(eev, fu);
-        }
-    }
-
     tf.sync = function() { // method to force a new layout of pseudo header
-        var mytable, nc, k, i, l;
+        var mytable, nc, k, i, l,theCell;
         mytable = document.getElementById(this.id.split('|')[1]);
         nr = mytable.rows.length;
 
@@ -333,6 +311,14 @@ function floatHeader(tableId, head) {
             }
         }
     };
+    function addEvent(obj, ev, fu) {
+        if (obj.addEventListener) {
+            obj.addEventListener(ev, fu, false);
+        } else {
+            var eev = 'on' + ev;
+            obj.attachEvent(eev, fu);
+        }
+    }
     addEvent(window, 'scroll', scroll);
     return tf;
 }
