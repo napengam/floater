@@ -64,18 +64,17 @@ function floatHeader(tableId, head) {
         setAtt(div.style, {zIndex: 15,
             width: mytable.clientWidth + 'px',
             position: 'absolute',
-            left: floatoffsetleft + 'px',
-            height: mytable.rows[0].cells[0].clientHeight + 'px'}
+            left: floatoffsetleft + 'px'
+        }
         );
         return div;
     }
     function createDivCornerHead(mytable, floatoffsetleft) {
         var div = document.createElement('div');
         setAtt(div, {id: 'floatcorner_' + mytable.id,
-            className: 'floatHead'}
+            className: 'floatCorner'}
         );
         setAtt(div.style, {zIndex: 15,
-            width: 'auto',
             position: 'absolute',
             left: floatoffsetleft + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px'}
@@ -87,8 +86,7 @@ function floatHeader(tableId, head) {
         setAtt(div, {id: 'floatleftcolumn_' + mytable.id,
             className: 'outerFloatHead'}
         );
-        setAtt(div.style, {zIndex: 15,
-            width: 'auto',
+        setAtt(div.style, {zIndex: 12,
             position: 'absolute',
             left: floatoffsetleft + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px'}
@@ -126,8 +124,9 @@ function floatHeader(tableId, head) {
     }
     var mytable, floatoffsetleft = 0
             , row = [], floatPos, cornerPos, columnPos
-            , py, i, nc, nr, th, offsettop, top, height, delta, first
-            , k, tf, tlc = {}, lc = {}, lcTop, lcw = 0, theCell, allHeight = 0;
+            , py, i, nc, nr, th, offsettop, top, height, delta
+            , k, tf, tlc = {}, lc = {}, lcTop, lcw = 0, theCell, allHeight = 0
+            , allHeight2 = 0, tlcw = 0;
 
     if (typeof head === 'undefined') {
         var head = {ncpth: [], nccol: 0};
@@ -151,67 +150,75 @@ function floatHeader(tableId, head) {
     //////////////////////////////
     /// header rows only 
     /////////////////////////////
+    document.body.appendChild(tf);
     tf.style.top = floatPos.y + 'px';
     nr = mytable.rows.length;
-    for (k = 0, first = true; k < nr; k++) {
+    if (head.nccol > 0) {
+        document.body.appendChild(tlc);
+    }
+    for (k = 0; k < nr; k++) {
         if (mytable.rows[k].cells[0].tagName !== 'TH') {
             break;
         }
         row = mytable.rows[k];
-        allHeight += row.cells[0].clientHeight;
         nc = row.cells.length;
         tlc.rightEdge = floatoffsetleft;
         for (i = 0; i < nc; i++) { // copy content of header cells from table   
             th = copyCell(row.cells[i], row.cells[i].offsetTop, i);
             tf.appendChild(th);
+            th.style.height = row.cells[i].clientHeight + 'px';
             if (k < head.ncpth.length) {// copy cells into top left corner div  
                 if (i < head.ncpth[k]) {
                     th = copyCell(row.cells[i], row.cells[i].offsetTop, i);
                     tlc.appendChild(th);
+                    th.style.height = row.cells[i].clientHeight + 'px';
+                    allHeight2 = row.offsetTop + row.clientHeight;
+                    tlcw = row.cells[i].offsetLeft + row.cells[i].clientWidth;
                 }
             }
         }
     }
+    allHeight = row.offsetTop + row.clientHeight;
     ///////////////////////
     //// left column cells  only
     ///////////////////////
     if (head.nccol > 0) {
+        document.body.appendChild(lc);
         columnPos = absPos(mytable.rows[k].cells[0]);
         lcTop = columnPos.y;
         delta = lcTop - floatPos.y;
-        first = true;
+      
         lcw = 0;
+        delta = mytable.rows[k].offsetTop;
         for (height = 0, top = 0; k < nr; k++) {
             row = mytable.rows[k];
             nc = row.cells.length;
             for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
                 th = copyLeftColumn(row.cells[i], row.cells[i].offsetTop - delta, i);
                 lc.appendChild(th);
-                if (first) {
-                    lcw += row.cells[i].clientWidth;
-                }
+                lcw = row.cells[i].offsetLeft + row.cells[i].clientWidth;
             }
-            first = false;        
-            height += row.clientHeight;
         }
+        height = row.offsetTop + row.clientHeight;
     }
     tf.style.height = allHeight + 'px';
-    document.body.appendChild(tf);
     tf.rightEdge = 0;
 
     if (head.nccol > 0) {
         lc.style.top = lcTop + 'px';
-        lc.style.height = height + 'px';
-        document.body.appendChild(lc);
+        lc.style.height = height - delta + 'px';
         lc.style.width = lcw + 'px';
-        tlc.style.height = allHeight + 'px';
-        document.body.appendChild(tlc);
-        tlc.rightEdge = floatPos.x + tf.clientWidth - lc.clientWidth;
-        tf.rightEdge = tlc.rightEdge;
+        lc.style.display = 'none';
+
+        tlc.style.height = tf.style.height;
+        tlc.rightEdge = floatPos.x + tf.clientWidth - lcw;
         tlc.left = floatoffsetleft;
         tlc.x = floatoffsetleft;
+        tlc.style.height = allHeight2 + 'px';
+        tlc.style.width = tlcw+2 + 'px';
         tlc.style.display = 'none';
-        lc.style.display = 'none';
+
+        tf.rightEdge = tlc.rightEdge;
     }
     py = 0;
     height = mytable.clientHeight;
@@ -223,7 +230,7 @@ function floatHeader(tableId, head) {
     tf.style.display = 'none';
 
     function scroll() { // does the scrolling 
-        var y, x,ypx,xpx;
+        var y, x, ypx, xpx;
         y = window.pageYOffset;
         x = head.nccol > 0 ? window.pageXOffset : 0;
         /////////////////////////////////// vertical scrolling /////////////////////////
@@ -239,7 +246,7 @@ function floatHeader(tableId, head) {
                 return;
             }
             if (tf.tabtop - y < 0) {
-                ypx=y + 'px';
+                ypx = y + 'px';
                 if (tf.y !== ypx) {
                     tf.style.top = ypx;
                     tlc.style.top = ypx;
@@ -270,7 +277,7 @@ function floatHeader(tableId, head) {
                 return;
             }
             if (tlc.left <= x && x < tf.rightEdge) {
-                xpx=x + 'px';
+                xpx = x + 'px';
                 if (tlc.x !== xpx) {
                     tlc.style.left = xpx;
                     lc.style.left = xpx;
@@ -279,6 +286,8 @@ function floatHeader(tableId, head) {
                         tlc.style.display = 'block';
                         lc.style.display = 'block';
                     }
+                } else if (tlc.style.display === 'none') {
+                    tlc.style.display = 'block';
                 }
                 return;
             } else {
