@@ -30,11 +30,11 @@ toDo
 ====
 
 Add functionality to keep floating objects in sync with
-content chnages inside a table. 
+content changes inside a table. 
 
 In case rows are added or deleted the floating
 left columns have to be adjusted  
 
-In case content/geometry of columns change this has to be taken care of.
+In case content/geometry of columns change, this has to be taken care of.
 Influenc of these changes on left columns and header columns.
 
