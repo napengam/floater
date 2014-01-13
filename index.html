@@ -31,12 +31,26 @@
                 <b></b>
                 <span class="small"><b></b></span>                                     
             </div>
-            <h2>All the  200+ CLOC JavaScript you need is in the source of this page</h2>   
+            <h2>All the  300+ CLOC JavaScript you need is in the source of this page</h2>   
             <p>
-                Resize your browser so that you can sroll the table headers out of view
+                Sroll the table headers out of view
             <p>
-                You shoud then see the pseudo headers floating in as needed
-                As of  25.12.2013 this has been working for :
+                You shoud then see the pseudo headers floating in as needed as well
+                as columns from the,left.
+                
+                For table with id=t1 the configuration looks like<br>
+                <pre>
+                floatHeader('t1',{ncpth:[1,2],nccol:2});
+                </pre>
+                &nbsp;
+                <p>
+            <b>ncpth</b> specifies to take one header column from row with index 0 and<br>
+                2 header columns from row with index 1, to create the floating top left header corner.
+                <br>
+                <b> nccol</b> specifies to take the first 2 columns from every data row below the header
+                <p>
+                
+                As of  12.01.2014 this has been working for :
             <p>
                 IE9 , Chrome Version 23.0.1271.97,  FireFox 17.0.1 , 
                 Opera 12.12, Safari 5.1.7.
