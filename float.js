@@ -58,7 +58,7 @@ function floatHeader(tableId, head) {
     }
     function createDivHead(mytable, x) {
         var div = document.createElement('div');
-        setAtt(div, {id: 'float' + mytable.id,
+        setAtt(div, {id: 'float_' + mytable.id,
             className: 'outerFloatHead'}
         );
         setAtt(div.style, {zIndex: 15,
@@ -290,10 +290,9 @@ function floatHeader(tableId, head) {
         }
 
     }
-
     tf.sync = function() { // method to force a new layout of pseudo header
         var mytable, nc, k, i, l,theCell;
-        mytable = document.getElementById(this.id.split('|')[1]);
+        mytable = document.getElementById(this.id.split('_')[1]);
         nr = mytable.rows.length;
 
         for (k = 0, l = 0; k < nr; k++) {
@@ -320,5 +319,8 @@ function floatHeader(tableId, head) {
         }
     }
     addEvent(window, 'scroll', scroll);
+    // pointers to corner and left column;
+    tf.tlc=tlc;
+    tf.lc=lc;
     return tf;
 }
