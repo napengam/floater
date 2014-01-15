@@ -18,6 +18,16 @@ In addition to this you can now specify how many columns
 from the left edge of the table should be moved into view
 at the elft edge, if these will be scrolled out of view.
 
+Added functionality to keep floating objects in sync with
+content changes inside a table. 
+
+In case rows are added or deleted the floating
+left columns have to be adjusted  
+
+In case content/geometry of columns change this has to be taken care of.
+Influenc of these changes on left columns and header columns.
+
+
 For details regarding usage and implementation please see 
 files index.html and float.js 
 
@@ -26,15 +36,4 @@ As of  12.01.2014 this has been working for :
                 IE9 , Chrome Version 23.0.1271.97,  FireFox 17.0.1 , 
                 Opera 12.12, Safari 5.1.7.
  
-toDo
-====
-
-Add functionality to keep floating objects in sync with
-content chnages inside a table. 
-
-In case rows are added or deleted the floating
-left columns have to be adjusted  
-
-In case content/geometry of columns change this has to be taken care of.
-Influenc of these changes on left columns and header columns.
-
+ 
