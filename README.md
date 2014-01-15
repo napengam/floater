@@ -36,4 +36,15 @@ As of  12.01.2014 this has been working for :
                 IE9 , Chrome Version 23.0.1271.97,  FireFox 17.0.1 , 
                 Opera 12.12, Safari 5.1.7.
  
- 
+toDo
+====
+
+Add functionality to keep floating objects in sync with
+content changes inside a table. 
+
+In case rows are added or deleted the floating
+left columns have to be adjusted  
+
+In case content/geometry of columns change, this has to be taken care of.
+Influenc of these changes on left columns and header columns.
+
