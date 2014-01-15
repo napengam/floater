@@ -4,7 +4,7 @@
     border-right:0px solid black;             
     border-left:0px solid black; 
     background:white;
-      
+    position:absolute;
 }
 .floatHead{            
     margin:0;
@@ -16,7 +16,7 @@
     background:white;                             
     border-left: 1px solid black;
     border-bottom: 1px solid black;
-    font-weight:bold; 
+    font-weight:bold;
 }
 .floatCorner{            
     margin:0;
@@ -28,15 +28,17 @@
     background:#dbd7c6;                        
     border-left: 1px solid black;
     border-bottom: 1px solid black;
-    font-weight:bold; 
+    font-weight:bold;
 }
 .floatCol{            
     margin:0;
     padding:0px;
     border-color: black;
-    text-align: left;            
-    position:absolute;
-    border:0;              
+    text-align: left;       
+    vertical-align:middle;
+    position:absolute;              
     background:#edebe0;                           
-    border: 1px solid blue;                                 
+    border: 1px solid blue; 
+    display:table-cell;
+    vertical-align:middle;
 }
