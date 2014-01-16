@@ -128,37 +128,42 @@ function floatHeader(tableId, head) {
         return div;
     }
     function setLeftColumnGeometry(head) {
-        lc.style.top = absPos(mytable.rows[head.ncpth.length].cells[0]).y + 'px';
-        lc.style.left = floatPos.x + 'px';
-        lc.style.height = mytable.clientHeight - mytable.rows[head.ncpth.length].offsetTop + 'px';
-        lc.style.width = lcw + 'px';
+        setAtt(lc.style, {
+            top: absPos(mytable.rows[head.ncpth.length].cells[0]).y + 'px',
+            left: floatPos.x + 'px',
+            height: mytable.clientHeight - mytable.rows[head.ncpth.length].offsetTop + 'px',
+            width: lcw + 'px'});
     }
     function setTopLeftCornerGeometry() {
         var nr, nc;
         nr = mytable.rows.length;
         nc = mytable.rows[nr - 1].cells.length;
-        tlc.style.height = tf.style.height;
-        tlc.rightEdge = floatPos.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
-        tlc.left = floatPos.x;
-        tlc.x = floatPos.x;
-        tlc.style.left = floatPos.x + 'px';
-        tlc.style.top = floatPos.y + 'px';
-        tlc.style.height = tf.style.heigh;
-        tlc.style.width = lcw + 2 + 'px';
+        setAtt(tlc, {
+            rightEdge: floatPos.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth,
+            left: floatPos.x,
+            x: floatPos.x});
+        setAtt(tlc.style, {
+            height: tf.style.height,
+            left: floatPos.x + 'px',
+            top: floatPos.y + 'px',
+            twidth: lcw + 2 + 'px'}
+        );
         tf.rightEdge = tlc.rightEdge;
     }
     function setTableHeadGeometry() {
-        tf.ybottom = floatPos.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight;
-        tf.tabtop = floatPos.y;
-        tf.x = floatPos.x;
-        tf.y = floatPos.y;
-        tf.left = floatPos.x;
-        tf.top = floatPos.y;
-        tf.right = tf.left + mytable.clientWidth;
-        tf.bottom = tf.top + mytable.clientHeight;
-        tf.style.left = floatPos.x + 'px';
-        tf.style.top = floatPos.y + 'px';
-        tf.style.width = mytable.clientWidth + 'px';
+        setAtt(tf, {
+            ybottom: floatPos.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight,
+            tabtop: floatPos.y,
+            x: floatPos.x,
+            y: floatPos.y,
+            left: floatPos.x,
+            top: floatPos.y,
+            right: tf.left + mytable.clientWidth,
+            bottom: tf.top + mytable.clientHeight});
+        setAtt(tf.style, {
+            left: floatPos.x + 'px',
+            top: floatPos.y + 'px',
+            width: mytable.clientWidth + 'px'});
     }
     var mytable
             , row = [], floatPos
