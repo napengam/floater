@@ -30,7 +30,7 @@
  the original header is scrolled out of view.
  
  To use this funtion your table must have an id speficied.
- Once alle tables are rendered you call floatHeader(tableId),
+ Once alle tables are rendered you call floatHeader(tableId,head),
  this returns the header object.
  
  /////////////////////////////////////////////////////////////*/
@@ -44,7 +44,7 @@ function floatHeader(tableId, head) {
         }
         return s;
     }
-    function absPos(obj) {
+    function absPos(obj) {// return absolute x,y position of obj
         var ob, pos = {};
         pos.x = obj.offsetLeft;
         pos.y = obj.offsetTop;
@@ -127,7 +127,7 @@ function floatHeader(tableId, head) {
         );
         return div;
     }
-    function setLeftColumnGeomtry(head) {
+    function setLeftColumnGeometry(head) {
         lc.style.top = absPos(mytable.rows[head.ncpth.length].cells[0]).y + 'px';
         lc.style.left = floatPos.x + 'px';
         lc.style.height = mytable.clientHeight - mytable.rows[head.ncpth.length].offsetTop + 'px';
@@ -225,7 +225,7 @@ function floatHeader(tableId, head) {
             }
         }
         lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
-        setLeftColumnGeomtry(head);
+        setLeftColumnGeometry(head);
         lc.style.display = 'none';
         setTopLeftCornerGeometry();
         tlc.style.display = 'none';
@@ -237,72 +237,52 @@ function floatHeader(tableId, head) {
         var y, x, ypx, xpx;
         y = window.pageYOffset;
         x = head.nccol > 0 ? window.pageXOffset : 0;
-        /////////////////////////////////// vertical scrolling /////////////////////////
-        if (y === 0) {
+        /////////////////////////////////// vertical scrolling /////////////////////////     
+        if (tf.top <= y && y <= tf.ybottom) {
+            ypx = y + 'px';
+            if (tf.y !== ypx) {
+                tf.style.top = ypx;
+                tlc.style.top = ypx;
+                tf.y = ypx;
+                if (tf.style.display === 'none') {
+                    tf.style.display = '';
+                    tlc.style.display = '';
+                }
+            } else if (tf.style.display === 'none') {
+                tf.style.display = '';
+            }
+        } else if (y < tf.top || y > tf.bottom) {
             if (tf.style.display !== 'none') {
                 tf.style.display = 'none';
                 tlc.style.display = 'none';
                 tf.style.top = tf.top + 'px';
                 tlc.style.top = tf.style.top;
             }
-        } else {
-            if (y > tf.ybottom) {
-                return;
-            }
-            if (tf.tabtop - y < 0) {
-                ypx = y + 'px';
-                if (tf.y !== ypx) {
-                    tf.style.top = ypx;
-                    tlc.style.top = ypx;
-                    tf.y = ypx;
-                    if (tf.style.display === 'none') {
-                        tf.style.display = '';
-                        tlc.style.display = '';
-                    }
-                }
-            } else {
-                if (tf.style.display !== 'none') {
-                    tf.style.display = 'none';
-                    tlc.style.display = 'none';
-                    tf.style.top = tf.top + 'px';
-                    tlc.style.top = tf.style.top;
-                }
-            }
         }
-        /////////////////////////////// horizontal scrolling //////////////////
-        if (x === 0) {
+        if(head.nccol === 0) return;
+        /////////////////////////////// horizontal scrolling //////////////////     
+        if (tlc.left < x && x < tf.rightEdge) {
+            xpx = x + 'px';
+            if (tlc.x !== xpx) {
+                tlc.style.left = xpx;
+                lc.style.left = xpx;
+                tlc.x = xpx;
+                if (tlc.style.display === 'none') {
+                    tlc.style.display = '';
+                    lc.style.display = '';
+                }
+            } else if (tlc.style.display === 'none') {
+                tlc.style.display = '';
+            }
+        } else if (x <= tlc.left || x > tlc.right) {
             if (tlc.style.display !== 'none') {
                 tlc.style.display = 'none';
                 lc.style.display = 'none';
             }
-            return;
-        } else {
-            if (x >= tf.rightEdge) {
-                return;
-            }
-            if (tlc.left <= x && x < tf.rightEdge) {
-                xpx = x + 'px';
-                if (tlc.x !== xpx) {
-                    tlc.style.left = xpx;
-                    lc.style.left = xpx;
-                    tlc.x = xpx;
-                    if (tlc.style.display === 'none') {
-                        tlc.style.display = '';
-                        lc.style.display = '';
-                    }
-                } else if (tlc.style.display === 'none') {
-                    tlc.style.display = '';
-                }
-                return;
-            } else {
-                if (tlc.style.display !== 'none') {
-                    tlc.style.display = 'none';
-                    lc.style.display = 'none';
-                }
-                return;
-            }
         }
+        return;
     }
+    
     tf.sync = function(ri, what) { // method to force a new layout of pseudo header
         var mytable, nc, nr, k, i, j, l, th, row;
         mytable = document.getElementById(this.id.split('_')[1]);
@@ -327,7 +307,7 @@ function floatHeader(tableId, head) {
             this.row(ri, what);
             row = mytable.rows[head.ncpth.length];
             lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
-            setLeftColumnGeomtry(head);
+            setLeftColumnGeometry(head);
             setTopLeftCornerGeometry();
         }
         setTableHeadGeometry();
