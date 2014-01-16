@@ -234,55 +234,48 @@ function floatHeader(tableId, head) {
     tf.style.display = 'none';
 
     function scroll() { // does the scrolling as event handler
-        var y, x, ypx, xpx;
+        var y, x;
         y = window.pageYOffset;
-        x = head.nccol > 0 ? window.pageXOffset : 0;
+        x = window.pageXOffset;
         /////////////////////////////////// vertical scrolling /////////////////////////     
         if (tf.top <= y && y <= tf.ybottom) {
-            ypx = y + 'px';
-            if (tf.y !== ypx) {
-                tf.style.top = ypx;
-                tlc.style.top = ypx;
-                tf.y = ypx;
+            if (tf.y !== y) {
+                tlc.style.top = tf.style.top = y + 'px';
+                tf.y = y;
                 if (tf.style.display === 'none') {
-                    tf.style.display = '';
-                    tlc.style.display = '';
+                    tlc.style.display = tf.style.display = '';
                 }
             } else if (tf.style.display === 'none') {
                 tf.style.display = '';
             }
         } else if (y < tf.top || y > tf.bottom) {
             if (tf.style.display !== 'none') {
-                tf.style.display = 'none';
-                tlc.style.display = 'none';
-                tf.style.top = tf.top + 'px';
-                tlc.style.top = tf.style.top;
+                tlc.style.display = tf.style.display = 'none';
+                tlc.style.top = tf.style.top = tf.top + 'px';
             }
         }
-        if(head.nccol === 0) return;
+        if (head.nccol === 0) {
+            return;
+        }
         /////////////////////////////// horizontal scrolling //////////////////     
         if (tlc.left < x && x < tf.rightEdge) {
-            xpx = x + 'px';
-            if (tlc.x !== xpx) {
-                tlc.style.left = xpx;
-                lc.style.left = xpx;
-                tlc.x = xpx;
+            if (tlc.x !== x) {
+                lc.style.left = tlc.style.left = x + 'px';
+                tlc.x = x;
                 if (tlc.style.display === 'none') {
-                    tlc.style.display = '';
-                    lc.style.display = '';
+                    lc.style.display = tlc.style.display = '';
                 }
             } else if (tlc.style.display === 'none') {
                 tlc.style.display = '';
             }
         } else if (x <= tlc.left || x > tlc.right) {
             if (tlc.style.display !== 'none') {
-                tlc.style.display = 'none';
-                lc.style.display = 'none';
+                lc.style.display = tlc.style.display = 'none';
             }
         }
         return;
     }
-    
+
     tf.sync = function(ri, what) { // method to force a new layout of pseudo header
         var mytable, nc, nr, k, i, j, l, th, row;
         mytable = document.getElementById(this.id.split('_')[1]);
