@@ -60,12 +60,12 @@ function floatHeader(tableId, head) {
         var div = document.createElement('div');
         setAtt(div, {id: 'float_' + mytable.id,
             className: 'outerFloatHead',
-            frozen: false,
             see: false}
         );
         setAtt(div.style, {zIndex: 15,
             width: mytable.clientWidth + 'px',
-            left: x + 'px'
+            left: x + 'px',
+            position: 'absolute'
         }
         );
         return div;
@@ -74,12 +74,12 @@ function floatHeader(tableId, head) {
         var div = document.createElement('div');
         setAtt(div, {id: 'floatcorner_' + mytable.id,
             className: 'floatCorner',
-            frozen: false,
             see: false}
         );
         setAtt(div.style, {zIndex: 15,
             left: x + 'px',
-            height: mytable.rows[0].cells[0].clientHeight + 'px'}
+            height: mytable.rows[0].cells[0].clientHeight + 'px',
+            position: 'absolute'}
         );
         return div;
     }
@@ -87,12 +87,12 @@ function floatHeader(tableId, head) {
         var div = document.createElement('div');
         setAtt(div, {id: 'floatleftcolumn_' + mytable.id,
             className: 'outerFloatHead',
-            frozen: false,
             see: false}
         );
         setAtt(div.style, {zIndex: 12,
             left: x + 'px',
-            height: mytable.rows[0].cells[0].clientHeight + 'px'}
+            height: mytable.rows[0].cells[0].clientHeight + 'px',
+            position: 'absolute'}
         );
         return div;
     }
@@ -109,7 +109,8 @@ function floatHeader(tableId, head) {
         setAtt(div.style, {
             left: theCell.offsetLeft + 'px',
             top: top + 'px',
-            width: theCell.clientWidth + 'px'
+            width: theCell.clientWidth + 'px',
+            position: 'absolute'
         }
         );
         return div;
@@ -129,7 +130,8 @@ function floatHeader(tableId, head) {
             left: theCell.offsetLeft + 'px',
             top: top + 'px',
             width: theCell.clientWidth + 'px',
-            height: theCell.clientHeight + 'px'}
+            height: theCell.clientHeight + 'px',
+            position: 'absolute'}
         );
         return div;
     }
@@ -138,7 +140,8 @@ function floatHeader(tableId, head) {
             top: absPos(mytable.rows[head.ncpth.length].cells[0]).y + 'px',
             left: floatPos.x + 'px',
             height: mytable.clientHeight - mytable.rows[head.ncpth.length].offsetTop + 'px',
-            width: lcw + 'px'});
+            width: lcw + 'px',
+            position: 'absolute'});
         lc.top = parseInt(lc.style.top);
     }
     function setTopLeftCornerGeometry() {
@@ -154,10 +157,10 @@ function floatHeader(tableId, head) {
             height: tf.style.height,
             left: floatPos.x + 'px',
             top: floatPos.y + 'px',
-            width: lcw + 2 + 'px'}
+            width: lcw + 2 + 'px',
+            position: 'absolute'}
         );
         tf.rightEdge = tlc.rightEdge;
-
     }
     function setTableHeadGeometry() {
         setAtt(tf, {
@@ -174,7 +177,8 @@ function floatHeader(tableId, head) {
         setAtt(tf.style, {
             left: floatPos.x + 'px',
             top: floatPos.y + 'px',
-            width: mytable.clientWidth + 'px'});
+            width: mytable.clientWidth + 'px',
+            position: 'absolute'});
     }
     var mytable
             , row = [], floatPos
@@ -253,23 +257,28 @@ function floatHeader(tableId, head) {
     }
     setTableHeadGeometry();
     tf.style.display = 'none';
-
-
+    floatPos.lcw = mytable.rows[nr - 1].cells[nc - 1].clientWidth;
     floatPos.yEdge = floatPos.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight;
     floatPos.xEdge = floatPos.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
-    floatPos.right = floatPos.x + mytable.clientWidth;
-    floatPos.bottom = floatPos.x + mytable.clientHeight;
+    floatPos.right = floatPos.x + mytable.clientWidth - 1;
+    floatPos.bottom = floatPos.y + mytable.clientHeight - 1;
     floatPos.ylc = absPos(mytable.rows[head.ncpth.length]).y;
-    floatPos.sx = 0;
-    floatPos.sy = 0;
-
+    floatPos.sx = -1;
+    floatPos.sy = -1;
+    floatPos.xout = false;
+    floatPos.yout = false;
 
     function scroll() {
-        var y, x;
+
+        var y, yy, delta, x;
         y = window.pageYOffset;
         x = window.pageXOffset;
-
+        
+        
         function fixed(obj, x, y) {
+            if (obj.style.position === 'fixed' && obj.style.display !== 'none') {
+                return obj;
+            }
             obj.style.left = x + 'px';
             obj.style.top = y + 'px';
             obj.style.position = 'fixed';
@@ -277,89 +286,112 @@ function floatHeader(tableId, head) {
                 obj.style.display = '';
                 obj.see = true;
             }
-            obj.frozen = true;
             return obj;
         }
-
         function absolute(obj, x, y) {
-            obj.style.left = x + 'px';
-            obj.style.top = y + 'px';
+            if (obj.style.position === 'absolute' && obj.style.display !== 'none') {
+                return obj;
+            }
             obj.style.position = 'absolute';
+            if (x !== '') {
+                obj.style.left = x + 'px';
+            }
+            obj.style.top = y + 'px';
             if (obj.style.display === 'none') {
                 obj.style.display = '';
                 obj.see = true;
             }
-            obj.frozen = false;
             return obj;
+        }
+        function getLastY(obj) {
+            if (obj.style.position === 'fixed') {
+                return parseInt(obj.style.top) + y;
+            }
+            return parseInt(obj.style.top);
         }
         function hide(obj) {
             if (obj.style.display !== 'none') {
-                obj.style.display = 'none'
+                obj.style.display = 'none';
                 obj.see = false;
-                obj.frozen = false;
             }
             return obj;
         }
-        if (floatPos.sy !== y) {
+        if (floatPos.sy !== y) {// vertical scrolling
             floatPos.sy = y;
-            if (lc.see && lc.frozen) {
-                lc = absolute(lc, x, floatPos.y);
+            if (lc.see) {
+                lc = absolute(lc, x, floatPos.ylc);
             }
             if (y < floatPos.y) {
-                //hide all
                 hide(tf);
-                if (tlc.frozen && tlc.see) {
-                    tlc = absolute(tlc, x, floatPos.y);
+                if (tlc.see) {
+                    tlc = absolute(tlc, parseInt(lc.style.left), floatPos.y);
                 }
             } else if (y < floatPos.yEdge) {
-                // freeze tf
-                if (!tf.frozen) {
-                    tf = fixed(tf, floatPos.x - x, 0);
-                }
+                tf = fixed(tf, floatPos.x - x, 0);
                 if (tlc.see) {
-                    tlc = fixed(tlc, 0, 0);
+                    tlc = fixed(tlc, parseInt(lc.style.left) - x, 0);
                 }
             } else if (y < floatPos.bottom) {
-                if (tf.see) {
+                if (tf.style.position !== 'absolute') {
                     tf = absolute(tf, floatPos.x, y);
+                    if (tlc.see) {
+                        tlc = absolute(tlc, x, y);
+                    }
                 }
-                if (tlc.see) {
-                    tlc = absolute(tlc, floatPos.x, y);
-                }
+                floatPos.yout = false;
             } else {
+                tf = absolute(tf, floatPos.x, 0 - floatPos.bottom);
+                tlc = absolute(tlc, floatPos.x, 0 - floatPos.bottom);
+                lc = absolute(lc, floatPos.x, 0 - floatPos.bottom);
                 hide(tf);
                 hide(tlc);
                 hide(lc);
+                floatPos.sx = -1;
+                floatPos.yout = true;
             }
         }
-        if (floatPos.sx !== x) {
+        if (floatPos.sx !== x) { // horizontal scrolling
+
             floatPos.sx = x;
-            if (tf.see && tf.frozen) {
+            yy = floatPos.y - y;
+            if (tf.see) {
                 tf = absolute(tf, floatPos.x, y);
+                yy = parseInt(tf.style.top) - y;
             }
             if (x <= floatPos.x) {
                 hide(lc);
                 hide(tlc);
-            } else if (x < floatPos.xEdge) {
-                if (!tlc.see || !tlc.frozen) {
-                    if (!tf.see) {
-                        tlc = fixed(tlc, 0, floatPos.y - y);
-                    } else {
-                        tlc = fixed(tlc, 0, 0);
-                    }
-                    lc = fixed(lc, 0, floatPos.ylc - y);
-                }
-            } else if (x < floatPos.right) {
-
-                if (tlc.frozen || tlc.view) {
-                    tlc = absolute(tlc, x, parseInt(tlc.style.top) + y);
+                floatPos.xout = false;
+            } else if (x <= floatPos.xEdge) {
+                tlc = fixed(tlc, 0, yy);
+                lc = fixed(lc, 0, floatPos.ylc - y);
+                floatPos.xout = false;
+            } else if (x <= floatPos.right) {
+                if (tlc.style.position !== 'absolute' && !floatPos.xout) {
+                    tlc = absolute(tlc, parseInt(tlc.style.left) + x, parseInt(tlc.style.top) + y);
                     lc = absolute(lc, x, floatPos.ylc);
                 }
-            } else {/**
-             hide(tf);
-             hide(tlc);
-             hide(lc);
-             **/
+                if (floatPos.xout) {
+                    if (y > 0) {
+                        tlc = absolute(tlc, floatPos.xEdge, tlc.lastY + (y - tlc.lasty));
+                    } else {
+                        tlc = absolute(tlc, floatPos.xEdge, floatPos.y);
+                    }
+                    lc = absolute(lc, floatPos.xEdge, floatPos.ylc);
+                }
+                floatPos.xout = false;
+            } else {
+                if (!floatPos.xout) {
+                    floatPos.xout = true;
+                    tf = absolute(tf, floatPos.x, 0 - floatPos.bottom);
+                    tlc.lastY = getLastY(tlc);
+                    tlc = absolute(tlc, floatPos.x, 0 - floatPos.bottom);
+                    lc = absolute(lc, floatPos.x, 0 - floatPos.bottom);
+                    hide(tf);
+                    hide(tlc);
+                    hide(lc);
+                }
+                floatPos.sy = -1;
             }
         }
     }
@@ -396,7 +428,6 @@ function floatHeader(tableId, head) {
             setTopLeftCornerGeometry();
         }
         setTableHeadGeometry();
-
         floatPos.yEdge = floatPos.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight;
         floatPos.xEdge = floatPos.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
         floatPos.right = floatPos.x + mytable.clientWidth;
@@ -404,7 +435,6 @@ function floatHeader(tableId, head) {
         floatPos.ylc = absPos(mytable.rows[head.ncpth.length]).y;
         floatPos.sx = 0;
         floatPos.sy = 0;
-
     };
     tf.row = function(ri, what) { // method to force a new layout of pseudo header
         var mytable, nc, k, row, j, i;
