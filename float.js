@@ -77,6 +77,7 @@ function floatHeader(tableId, head) {
             see: false}
         );
         setAtt(div.style, {zIndex: 12,
+            background: 'yellow',
             left: x + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px',
             position: 'absolute'}
@@ -122,7 +123,7 @@ function floatHeader(tableId, head) {
         );
         return div;
     }
-    function setLeftColumnflometry(head) {
+    function setLeftColumngeometry(head) {
         setAtt(lc.style, {
             top: absPos(mytable.rows[head.ncpth.length].cells[0]).y + 'px',
             left: flo.x + 'px',
@@ -130,7 +131,7 @@ function floatHeader(tableId, head) {
             width: lcw + 'px',
             position: 'absolute'});
     }
-    function setTopLeftCornerflometry() {
+    function setTopLeftCornergeometry() {
         setAtt(tlc.style, {
             borderRight: '1px solid black',
             height: tf.style.height,
@@ -141,27 +142,39 @@ function floatHeader(tableId, head) {
         );
         tf.rightEdge = tlc.rightEdge;
     }
-    function setTableHeadflometry() {
+    function setTableHeadgeometry() {
         setAtt(tf.style, {
             left: flo.x + 'px',
             top: flo.y + 'px',
             width: mytable.clientWidth + 'px',
             position: 'absolute'});
     }
+
+    function setFlo(flo) {
+        flo.lcw = mytable.rows[nr - 1].cells[nc - 1].clientWidth;
+        flo.yEdge = flo.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight;
+        flo.xEdge = flo.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
+        flo.right = flo.x + mytable.clientWidth - 1;
+        flo.bottom = flo.y + mytable.clientHeight - 1;
+        flo.ylc = absPos(mytable.rows[head.ncpth.length]).y;
+        flo.sx = -1;
+        flo.sy = -1;
+        return flo;
+    }
+
     var mytable
             , row = [], flo
-            , i, nc, nr, th, delta
-            , k, tf, tlc = {}, lc = {}, lcw = 0;
+            , i, nc, nr, th, delta, abs = 'asbsolute', fix = 'fixed', px = 'px'
+            , k, tf, tlc = {style: null}, lc = {style: null}, lcw = 0;
     mytable = document.getElementById(tableId);
-
     head = head || {};
-
     flo = absPos(mytable);
     tf = createDivHead(mytable, 'float_', flo.x); // entire header
 
     if (typeof head.ncpth === 'undefined') {
         head.ncpth = [];
-        head.nccol = 0;// default      
+        head.nccol = 0; // default  
+
     } else {
         tlc = createDivHead(mytable, 'float_corner', flo.x); // top left corener
         lc = createDivLeftColumn(mytable, flo.x); //  left column
@@ -214,165 +227,146 @@ function floatHeader(tableId, head) {
             }
         }
         lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
-        setLeftColumnflometry(head);
+        setLeftColumngeometry(head);
         lc.style.display = 'none';
-        setTopLeftCornerflometry();
+        setTopLeftCornergeometry();
         tlc.style.display = 'none';
     }
-    setTableHeadflometry();
+    setTableHeadgeometry();
     tf.style.display = 'none';
-
     // flo keeps all neccessary geometry
-    flo.lcw = mytable.rows[nr - 1].cells[nc - 1].clientWidth;
-    flo.yEdge = flo.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight;
-    flo.xEdge = flo.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
-    flo.right = flo.x + mytable.clientWidth - 1;
-    flo.bottom = flo.y + mytable.clientHeight - 1;
-    flo.ylc = absPos(mytable.rows[head.ncpth.length]).y;
-    flo.sx = -1;
-    flo.sy = -1;
-    flo.xout = false;
-    flo.yout = false;
+    flo = setFlo(flo);
 
-    function scroll() {
-
-        var y, yy, delta, x;
-        y = window.pageYOffset;
-        x = window.pageXOffset;
-
-
-        function fixed(obj, x, y) {
-            if (typeof obj.style === 'undefined') {
-                return obj;
-            }
-            if ((obj.style.position === 'fixed' && obj.style.display !== 'none')) {
-                return obj;
-            }
-            obj.style.left = x + 'px';
-            obj.style.top = y + 'px';
-            obj.style.position = 'fixed';
-            if (obj.style.display === 'none') {
-                obj.style.display = '';
-                obj.see = true;
-            }
-            return obj;
+    tf.hsync = function(x, y) {
+        var t = this.style;
+        if (t.position === 'fixed') {
+            t.position = 'absolute';
+            t.left = flo.x + 'px';
+            t.top = y + 'px';
         }
-        function absolute(obj, x, y) {
-            if (typeof obj.style === 'undefined') {
-                return obj;
-            }
-            if ((obj.style.position === 'absolute' && obj.style.display !== 'none')) {
-                return obj;
-            }
-            obj.style.position = 'absolute';
-            if (x !== '') {
-                obj.style.left = x + 'px';
-            }
-            obj.style.top = y + 'px';
-            if (obj.style.display === 'none') {
-                obj.style.display = '';
-                obj.see = true;
-            }
-            return obj;
+    };
+    tf.vsync = function(x, y) {
+        var t = this.style;
+        if ((y < flo.y || y > flo.bottom)) {
+            t.display !== 'none' ? t.display = 'none' : '';
+            return;
         }
-        function getLastY(obj) {
-            var ly = 0;
-            if (typeof obj.style !== 'undefined') {
-                ly = parseInt(obj.style.top) + ((obj.style.position === 'fixed')? y:0);
-            }
-            return ly;
+        t.display === 'none' ? t.display = '' : '';
+        if (t.position === 'absolute') {
+            t.position = 'fixed';
+            t.left = flo.x - x + 'px';
+            t.top = 0 + 'px';
         }
-        function hide(obj) {
-            if (typeof obj.style === 'undefined') {
-                return obj;
-            }
-            if (obj.style.display !== 'none') {
-                obj.style.display = 'none';
-                obj.see = false;
-            }
-            return obj;
+    };
+    lc.hsync = function(x, y) {
+        var t = this.style;
+        if (t === null)
+            return;
+        if ((x < flo.x || x > flo.xEdge)) {
+            t.display !== 'none' ? t.display = 'none' : '';
+            t.position = 'absolute';
+            return;
         }
-        if (flo.sy !== y) {// vertical scrolling
-            flo.sy = y;
-            if (lc.see) {
-                lc = absolute(lc, x, flo.ylc);
+        t.display === 'none' ? t.display = '' : '';
+        if (t.position === 'absolute') {
+            t.position = 'fixed';
+            t.left = 0 + 'px';
+            t.top = flo.ylc - y + 'px';
+        }
+    };
+    lc.vsync = function(x, y) {
+        var t = this.style;
+        if (t === null)
+            return;
+        if (y > flo.bottom) {
+            t.display !== 'none' ? t.display = 'none' : '';
+            return;
+        }
+        if (flo.x < x && t.display === 'none') {
+            t.display = '';
+        }
+        if (t.display !== 'none') {
+            if (t.position === 'fixed') {
+                t.position = 'absolute';
+                t.top = flo.ylc + 'px';
+                t.left = parseInt(t.left) + x + 'px';
+                return;
             }
+        }
+    };
+    tlc.hsync = function(x, y) {
+        var t = this.style;
+        if (t === null)
+            return;
+        if (!(flo.x <= x && x <= flo.xEdge && y <= flo.bottom)) {
+            t.display !== 'none' ? t.display = 'none' : '';
+            if (t.position === 'fixed') {
+                t.position = 'absolute';
+                t.top = parseInt(t.top) + y + 'px';
+                t.left = parseInt(t.left) + x + 'px';
+            }
+            return;
+        }
+        t.display === 'none' ? t.display = '' : '';
+        if (t.position === 'absolute') {
+            t.position = 'fixed';
+            t.left = '0px';
+            t.lastX = parseInt(t.left);
+            if (y <= flo.y) {
+                t.top = (flo.y - y) + 'px';
+            } else {
+                t.lastY = flo.y;
+                t.top = '0px';
+            }
+        }
+    };
+    tlc.vsync = function(x, y) {
+        var t = this.style;
+        if (t === null)
+            return;
+        if (!(flo.x <= x && x <= flo.xEdge && y <= flo.bottom)) {
+            t.display !== 'none' ? t.display = 'none' : '';
+            return;
+        }
+        if (t.display !== 'none') {
             if (y < flo.y) {
-                hide(tf);
-                if (tlc.see) {
-                    tlc = absolute(tlc, parseInt(lc.style.left), flo.y);
+                if (t.position === 'fixed') {
+                    t.position = 'absolute';
+                    t.left = (parseInt(t.left) + x) + 'px';
+                    t.top = parseInt(t.top) + y + 'px';
                 }
-            } else if (y < flo.yEdge) {
-                tf = fixed(tf, flo.x - x, 0);
-                if (tlc.see) {
-                    tlc = fixed(tlc, parseInt(lc.style.left) - x, 0);
-                }
-            } else if (y < flo.bottom) {
-                if (tf.style.position !== 'absolute') {
-                    tf = absolute(tf, flo.x, y);
-                    if (tlc.see) {
-                        tlc = absolute(tlc, x, y);
-                    }
-                }
-                flo.yout = false;
+                this.hsync(x, y);
             } else {
-                tf = absolute(tf, flo.x, 0 - flo.bottom);
-                tlc = absolute(tlc, flo.x, 0 - flo.bottom);
-                lc = absolute(lc, flo.x, 0 - flo.bottom);
-                hide(tf);
-                hide(tlc);
-                hide(lc);
-                flo.sx = -1;
-                flo.yout = true;
-            }
-        }
-        if (flo.sx !== x) { // horizontal scrolling
-
-            flo.sx = x;
-            yy = flo.y - y;
-            if (tf.see) {
-                tf = absolute(tf, flo.x, y);
-                yy = parseInt(tf.style.top) - y;
-            }
-            if (x <= flo.x) {
-                hide(lc);
-                hide(tlc);
-                flo.xout = false;
-            } else if (x <= flo.xEdge) {
-                tlc = fixed(tlc, 0, yy);
-                lc = fixed(lc, 0, flo.ylc - y);
-                flo.xout = false;
-            } else if (x <= flo.right) {
-                if (typeof tlc.style !== 'undefined' && tlc.style.position !== 'absolute' && !flo.xout) {
-                    tlc = absolute(tlc, parseInt(tlc.style.left) + x, parseInt(tlc.style.top) + y);
-                    lc = absolute(lc, x, flo.ylc);
+                if (t.position === 'absolute') {
+                    t.position = 'fixed';
+                    t.top = '0px';
+                    t.left = '0px';
                 }
-                if (flo.xout) {
-                    if (y > 0) {
-                        tlc = absolute(tlc, flo.xEdge, tlc.lastY + (y - tlc.lasty));
-                    } else {
-                        tlc = absolute(tlc, flo.xEdge, flo.y);
-                    }
-                    lc = absolute(lc, flo.xEdge, flo.ylc);
-                }
-                flo.xout = false;
-            } else {
-                if (!flo.xout) {
-                    flo.xout = true;
-                    tf = absolute(tf, flo.x, 0 - flo.bottom);
-                    tlc.lastY = getLastY(tlc);
-                    tlc = absolute(tlc, flo.x, 0 - flo.bottom);
-                    lc = absolute(lc, flo.x, 0 - flo.bottom);
-                    hide(tf);
-                    hide(tlc);
-                    hide(lc);
-                }
-                flo.sy = -1;
             }
+        } else {
+            this.hsync(x, y);
         }
     }
-    tf.sync = function() {
-        tf.syncRow(0, 0);
+    ;
+    function scroll() {
+        var y, x;
+        y = window.pageYOffset;
+        x = window.pageXOffset;
+        if (flo.sy !== y) {// vertical scrolling
+            flo.sy = y;
+            tf.vsync(x, y);
+            lc.vsync(x, y);
+            tlc.vsync(x, y);
+        }
+        if (flo.sx !== x) { // horizontal scrolling
+            flo.sx = x;
+            tf.hsync(x, y);
+            lc.hsync(x, y);
+            tlc.hsync(x, y);
+        }
+    }
+    tf.sync = function(ri,what) {
+        tf.syncRow(ri, what);
         scroll();
     };
     tf.syncRow = function(ri, what) { // method to force a new layout of pseudo header
@@ -400,17 +394,12 @@ function floatHeader(tableId, head) {
                 this.row(ri, what);
             row = mytable.rows[head.ncpth.length];
             lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
-            setLeftColumnflometry(head);
-            setTopLeftCornerflometry();
+            setLeftColumngeometry(head);
+            setTopLeftCornergeometry();
         }
-        setTableHeadflometry();
-        flo.yEdge = flo.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight;
-        flo.xEdge = flo.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
-        flo.right = flo.x + mytable.clientWidth;
-        flo.bottom = flo.x + mytable.clientHeight;
-        flo.ylc = absPos(mytable.rows[head.ncpth.length]).y;
-        flo.sx = 0;
-        flo.sy = 0;
+        setTableHeadgeometry();
+        // flo keeps all neccessary geometry
+        flo = setFlo(flo);
     };
     tf.row = function(ri, what) { // method to force a new layout of pseudo header
         var mytable, nc, k, row, j, i;
@@ -434,7 +423,7 @@ function floatHeader(tableId, head) {
         //////////////////////////////
         /// brute force sync/rearange left columns
         /// //////////////////////////
-        for (k = head.ncpth.length, j = 0; k < mytable.rows.length - 1; k++) {
+        for (k = head.ncpth.length, j = 0; k < nr ; k++) {
             row = mytable.rows[k];
             for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
                 updateLeftColumn(tf.lc.childNodes[j++], row.cells[i], row.cells[i].offsetTop - delta, i, row.rowIndex);

@@ -18,7 +18,7 @@
             }
             addEvent(window, 'load', function() {
                 t1=floatHeader('t1',{ncpth:[1,2],nccol:2});
-                t2=floatHeader('t2',{ncpth:[1],nccol:1});
+                t2=floatHeader('t2');
                 t3=floatHeader('t3',{ncpth:[1],nccol:1});
                 moveToBottom('foot');
                
@@ -67,13 +67,15 @@
                 <b></b>
                 <span class="small"><b></b></span>                                     
             </div>
-            <h2>All the  300+ CLOC JavaScript you need is in the source of this page</h2>   
+            <h2> 400+ CLOC JavaScript. All the sources can by found at <a href="https://github.com/napengam/floater" style="margin-left:1em;vertical-align:center">GitHub<img src="../GitHub.png"></a></h2>   
             <p>
                 Sroll the table headers out of view
             <p>
-                You shoud then see the pseudo headers floating in as needed as well
-                as columns from the,left.
-                
+                You shoud then see the pseudo headers get sticky (position=fixed) as needed as well<br>
+                as columns and corner headers from the left alternate between sticky <br>
+                when scolled in x direction or , sroll when scolling in y direction using position=absolute.<br>
+                &nbsp;
+            <p>
                 For table with id=t1 the configuration looks like<br>
                 <pre>
                 floatHeader('t1',{ncpth:[1,2],nccol:2});
@@ -140,7 +142,7 @@
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
-                            <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                            <tr><td>LASTROW</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>LASTD</td></tr>
                         </table>
                             
                     </td><td>
