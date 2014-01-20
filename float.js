@@ -330,12 +330,12 @@ function floatHeader(tableId, head) {
         }
         if (t.display !== 'none') {
             if (y < flo.y) {
+                this.hsync(x, y);              
                 if (t.position === 'fixed') {
                     t.position = 'absolute';
                     t.left = (parseInt(t.left) + x) + 'px';
-                    t.top = parseInt(t.top) + y + 'px';
-                }
-                this.hsync(x, y);
+                    t.top = flo.y + 'px';
+                }             
             } else {
                 if (t.position === 'absolute') {
                     t.position = 'fixed';
