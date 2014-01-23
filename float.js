@@ -49,12 +49,19 @@ function floatHeader(tableId, head) {
         pos.x = obj.offsetLeft;
         pos.y = obj.offsetTop;
         ob = obj.offsetParent;
-        while (ob.tagName !== 'BODY') {
+        while (ob !== null && ob.tagName !== 'BODY') {
             pos.x += ob.offsetLeft;
             pos.y += ob.offsetTop;
             ob = ob.offsetParent;
         }
         return pos;
+    }
+    function abs2rel(ref, x, y) {
+        var p1 = {}, p2 = {};
+        p1 = absPos(ref);
+        p2.x = p1.x - (p1.x - x);
+        p2.y = p1.y - (p1.y - y);
+        return p2;
     }
     function createDivHead(mytable, id, x) {
         var div = document.createElement('div');
@@ -62,10 +69,11 @@ function floatHeader(tableId, head) {
             className: 'outerFloatHead',
             see: false}
         );
-        setAtt(div.style, {zIndex: 15,
+        setAtt(div.style, {
             width: mytable.clientWidth + 'px',
             left: x + 'px',
-            position: 'absolute'
+            position: 'absolute',
+            zIndex: 15
         }
         );
         return div;
@@ -151,6 +159,14 @@ function floatHeader(tableId, head) {
     }
 
     function setFlo(flo) {
+        flo.dx = 0;
+        flo.dy = 0;
+        if (tableParent !== document.body) {
+            flo.dy = absPos(tableParent).y;
+            flo.dx = absPos(tableParent).x;
+            flo.y = flo.y - flo.dy;
+            flo.x = flo.x - flo.dx;
+        }
         flo.lcw = mytable.rows[nr - 1].cells[nc - 1].clientWidth;
         flo.yEdge = flo.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight;
         flo.xEdge = flo.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
@@ -163,18 +179,27 @@ function floatHeader(tableId, head) {
     }
 
     var mytable
-            , row = [], flo
+            , row = [], flo, div, myBody, scrollParent, tableParent
             , i, nc, nr, th, delta, abs = 'asbsolute', fix = 'fixed', px = 'px'
             , k, tf, tlc = {style: null}, lc = {style: null}, lcw = 0;
+
+
     mytable = document.getElementById(tableId);
+    myBody = document.getElementById(tableId + '_parent');
+    if (myBody !== null) {
+        tableParent = myBody;
+        scrollParent = tableParent;
+    } else {
+        tableParent = document.body;
+        scrollParent = window;
+    }
+
     head = head || {};
     flo = absPos(mytable);
     tf = createDivHead(mytable, 'float_', flo.x); // entire header
-
     if (typeof head.ncpth === 'undefined') {
         head.ncpth = [];
         head.nccol = 0; // default  
-
     } else {
         tlc = createDivHead(mytable, 'float_corner', flo.x); // top left corener
         lc = createDivLeftColumn(mytable, flo.x); //  left column
@@ -184,12 +209,17 @@ function floatHeader(tableId, head) {
 //////////////////////////////
 /// header rows only 
 /////////////////////////////
-    document.body.appendChild(tf);
+    tableParent.appendChild(tf);
     tf.style.top = flo.y + 'px';
     nr = mytable.rows.length;
     if (head.nccol > 0) {
-        document.body.appendChild(tlc);
+        tableParent.appendChild(tlc);
+        div = createDivHead(mytable, 'inner_corner_', 0); // entire header
+        tlc.appendChild(div);
     }
+    div = createDivHead(mytable, 'inner_float_', 0); // entire header
+    //tableParent.appendChild(div);
+    tf.appendChild(div);
 
     for (k = 0; k < nr; k++) {
         if (mytable.rows[k].cells[0].tagName !== 'TH') {
@@ -199,7 +229,7 @@ function floatHeader(tableId, head) {
         nc = row.cells.length;
         for (i = 0; i < nc; i++) { // copy content of header cells from table   
             th = createHeaderCell(row.cells[i], row.cells[i].offsetTop, i);
-            tf.appendChild(th);
+            div.appendChild(th);
             th.style.height = row.cells[i].clientHeight + 'px';
             if (k < head.ncpth.length && i < head.ncpth[k]) {// copy cells into top left corner div  
                 th = createHeaderCell(row.cells[i], row.cells[i].offsetTop, i);
@@ -208,14 +238,15 @@ function floatHeader(tableId, head) {
             }
         }
     }
-
     tf.style.height = row.offsetTop + row.clientHeight + 'px';
     tf.rightEdge = 0;
     ///////////////////////
     //// left column cells  only
     ///////////////////////
     if (head.nccol > 0) {
-        document.body.appendChild(lc);
+        tableParent.appendChild(lc);
+        div = createDivHead(mytable, 'inner_leftColumn_', 0); // entire header
+        lc.appendChild(div);
         lcw = 0;
         delta = mytable.rows[head.ncpth.length].offsetTop;
         for (/*k from loop above*/; k < nr; k++) {
@@ -237,6 +268,19 @@ function floatHeader(tableId, head) {
     // flo keeps all neccessary geometry
     flo = setFlo(flo);
 
+
+    if (tableParent !== document.body) {
+        k = absPos(tf);
+        delta = abs2rel(tableParent, k.x, k.y);
+        tableParent.style.position = 'relative';
+        tf.style.top = flo.y + 'px';
+        tf.style.left = flo.x + 'px';
+    }
+    //tf.style.display='block';
+    //tlc.style.display='block';
+    //lc.style.display='block';
+
+
     tf.hsync = function(x, y) {
         var t = this.style;
         if (t.position === 'fixed') {
@@ -252,38 +296,65 @@ function floatHeader(tableId, head) {
             return;
         }
         t.display === 'none' ? t.display = '' : '';
-        if (t.position === 'absolute') {
+        if (t.position !== 'fixed') {
             t.position = 'fixed';
             t.left = flo.x - x + 'px';
             t.top = 0 + 'px';
         }
     };
-    lc.hsync = function(x, y) {
-        var t = this.style;
-        if (t === null)
-            return;
-        if ((x < flo.x || x > flo.xEdge)) {
+    tf.vsyncR = function(x, y) {
+        var t = this.style, tt = this.tlc.style;
+        if ((y < flo.y || y > flo.bottom)) {
             t.display !== 'none' ? t.display = 'none' : '';
-            t.position = 'absolute';
             return;
         }
         t.display === 'none' ? t.display = '' : '';
+        if (t.display !== 'none') {
+            t.position = t.position = 'absolute' ? 'absolute' : '';
+            t.left = flo.x + 'px';
+            t.top = y + 'px';
+        }
+    };
+    lc.hsync = function(x, y) {
+        var t = this.style, tt = this.tlc.style;
+        if (t === null)
+            return;
+        if ((x - 1 < flo.x || x > flo.xEdge)) {
+            t.display !== 'none' ? t.display = 'none' : '';
+            t.position = 'absolute';
+            tt.display = t.display;
+            tt.position = t.position;
+            return;
+        }
+        t.display === 'none' && y < flo.bottom ? t.display = '' : '';
         if (t.position === 'absolute') {
             t.position = 'fixed';
             t.left = 0 + 'px';
             t.top = flo.ylc - y + 'px';
         }
+        tt.display === 'none' && y < flo.bottom ? tt.display = '' : '';
+        if (tt.position === 'absolute') { // the corner
+            tt.position = 'fixed';
+            tt.left = '0px';
+            if (y <= flo.y) {
+                tt.top = (flo.y - y) + 'px';
+            } else {
+                tt.top = '0px';
+            }
+        }
     };
     lc.vsync = function(x, y) {
-        var t = this.style;
+        var t = this.style, tt = this.tlc.style;
         if (t === null)
             return;
-        if (y > flo.bottom) {
+        if (y > flo.bottom || x > flo.xEdge) {
             t.display !== 'none' ? t.display = 'none' : '';
+            tt.display = t.display;
             return;
         }
-        if (flo.x < x && t.display === 'none') {
+        if (flo.x < x - 1 && t.display === 'none') {
             t.display = '';
+            tt.display = t.display;
         }
         if (t.display !== 'none') {
             if (t.position === 'fixed') {
@@ -293,79 +364,101 @@ function floatHeader(tableId, head) {
                 return;
             }
         }
+        if (tt.display !== 'none') { // the corner
+            if (tt.position === 'absolute') {
+                if (y > flo.y) {
+                    tt.position = 'fixed';
+                    tt.top = 0 + 'px';
+                    tt.left = 0 + 'px';
+                }
+            } else {
+                if (y < flo.y) {
+                    tt.position = 'absolute';
+                    tt.top = flo.y + 'px';
+                    tt.left = x + 'px';
+                }
+            }
+        }
     };
-    tlc.hsync = function(x, y) {
-        var t = this.style;
+    lc.hsyncR = function(x, y) {
+        var t = this.style, tt = this.tlc.style;
         if (t === null)
             return;
-        if (!(flo.x <= x && x <= flo.xEdge && y <= flo.bottom)) {
+        if ((x < flo.x || x > flo.xEdge)) {
             t.display !== 'none' ? t.display = 'none' : '';
-            if (t.position === 'fixed') {
-                t.position = 'absolute';
-                t.top = parseInt(t.top) + y + 'px';
-                t.left = parseInt(t.left) + x + 'px';
-            }
+            t.position = 'absolute';
             return;
         }
         t.display === 'none' ? t.display = '' : '';
-        if (t.position === 'absolute') {
-            t.position = 'fixed';
-            t.left = '0px';
-            t.lastX = parseInt(t.left);
-            if (y <= flo.y) {
-                t.top = (flo.y - y) + 'px';
-            } else {
-                t.lastY = flo.y;
-                t.top = '0px';
-            }
+        if (tt.display === 'none') {
+            tt.top = flo.y + 'px';
         }
+        tt.display = t.display;
+        if (t.position === 'absolute') {
+            t.left = x + 'px';
+            t.top = flo.ylc - flo.dy + 'px';
+
+        }
+        tt.left = flo.x + x + 'px';
     };
-    tlc.vsync = function(x, y) {
-        var t = this.style;
+    lc.vsyncR = function(x, y) {
+        var t = this.style, tt = this.tlc.style;
         if (t === null)
             return;
-        if (!(flo.x <= x && x <= flo.xEdge && y <= flo.bottom)) {
+        if (y > flo.bottom) {
             t.display !== 'none' ? t.display = 'none' : '';
+            tt.display = t.display;
             return;
         }
-        if (t.display !== 'none') {
-            if (y < flo.y) {
-                this.hsync(x, y);              
-                if (t.position === 'fixed') {
-                    t.position = 'absolute';
-                    t.left = (parseInt(t.left) + x) + 'px';
-                    t.top = flo.y + 'px';
-                }             
-            } else {
-                if (t.position === 'absolute') {
-                    t.position = 'fixed';
-                    t.top = '0px';
-                    t.left = '0px';
-                }
-            }
-        } else {
-            this.hsync(x, y);
+        if (flo.x < x && t.display === 'none') {
+            t.display = '';
         }
-    }
-    ;
-    function scroll() {
-        var y, x;
-        y = window.pageYOffset;
-        x = window.pageXOffset;
+        if (t.display !== 'none') {
+            t.position = 'absolute';
+            if (t.top !== flo.ylc - flo.dy + 'px') {
+                t.top = flo.ylc - flo.dy + 'px';
+                t.left = 0 + 'px';
+            }
+            y = y > flo.y ? -flo.y + y : 0;
+            tt.top = flo.y + y + 'px';
+            return;
+        }
+    };
+
+
+    function scroll(e) {
+        var y, x, f;
+        if (tableParent === document.body) {
+            y = window.pageYOffset;
+            x = window.pageXOffset;
+            f = 0;
+        } else {
+            y = e.target.scrollTop;
+            x = e.target.scrollLeft;
+            f = 1
+        }
         if (flo.sy !== y) {// vertical scrolling
             flo.sy = y;
-            tf.vsync(x, y);
-            lc.vsync(x, y);
-            tlc.vsync(x, y);
+            if (f == 0) {
+                tf.vsync(x, y);
+                lc.vsync(x, y);
+            } else {
+                tf.vsyncR(x, y);
+                lc.vsyncR(x, y);
+            }
         }
         if (flo.sx !== x) { // horizontal scrolling
             flo.sx = x;
-            tf.hsync(x, y);
-            lc.hsync(x, y);
-            tlc.hsync(x, y);
+            if (f === 0) {
+                tf.hsync(x, y);
+                lc.hsync(x, y);
+            } else {
+                lc.hsyncR(x, y);
+            }
+
         }
     }
-    tf.sync = function(ri,what) {
+    tf.sync = function(ri, what) {
         tf.syncRow(ri, what);
         scroll();
     };
@@ -423,7 +516,7 @@ function floatHeader(tableId, head) {
         //////////////////////////////
         /// brute force sync/rearange left columns
         /// //////////////////////////
-        for (k = head.ncpth.length, j = 0; k < nr ; k++) {
+        for (k = head.ncpth.length, j = 0; k < nr; k++) {
             row = mytable.rows[k];
             for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
                 updateLeftColumn(tf.lc.childNodes[j++], row.cells[i], row.cells[i].offsetTop - delta, i, row.rowIndex);
@@ -439,9 +532,10 @@ function floatHeader(tableId, head) {
             obj.attachEvent(eev, fu);
         }
     }
-    addEvent(window, 'scroll', scroll);
+    addEvent(scrollParent, 'scroll', scroll);
     // pointers to corner and left column;
     tf.tlc = tlc;
     tf.lc = lc;
+    lc.tlc = tlc;
     return tf;
 }
