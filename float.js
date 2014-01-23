@@ -214,12 +214,12 @@ function floatHeader(tableId, head) {
     nr = mytable.rows.length;
     if (head.nccol > 0) {
         tableParent.appendChild(tlc);
-        div = createDivHead(mytable, 'inner_corner_', 0); // entire header
-        tlc.appendChild(div);
+        //div = createDivHead(mytable, 'inner_corner_', 0); // entire header
+        //tlc.appendChild(div);
     }
-    div = createDivHead(mytable, 'inner_float_', 0); // entire header
+    //div = createDivHead(mytable, 'inner_float_', 0); // entire header
     //tableParent.appendChild(div);
-    tf.appendChild(div);
+    //tf.appendChild(div);
 
     for (k = 0; k < nr; k++) {
         if (mytable.rows[k].cells[0].tagName !== 'TH') {
@@ -229,7 +229,7 @@ function floatHeader(tableId, head) {
         nc = row.cells.length;
         for (i = 0; i < nc; i++) { // copy content of header cells from table   
             th = createHeaderCell(row.cells[i], row.cells[i].offsetTop, i);
-            div.appendChild(th);
+            tf.appendChild(th);
             th.style.height = row.cells[i].clientHeight + 'px';
             if (k < head.ncpth.length && i < head.ncpth[k]) {// copy cells into top left corner div  
                 th = createHeaderCell(row.cells[i], row.cells[i].offsetTop, i);
@@ -310,7 +310,7 @@ function floatHeader(tableId, head) {
         }
         t.display === 'none' ? t.display = '' : '';
         if (t.display !== 'none') {
-            t.position = t.position = 'absolute' ? 'absolute' : '';
+            t.position !== 'absolute' ? t.position = 'absolute' : '';
             t.left = flo.x + 'px';
             t.top = y + 'px';
         }
@@ -393,11 +393,10 @@ function floatHeader(tableId, head) {
         if (tt.display === 'none') {
             tt.top = flo.y + 'px';
         }
-        tt.display = t.display;
+        tt.display === 'none' ? tt.display = '' : '';
         if (t.position === 'absolute') {
             t.left = x + 'px';
-            t.top = flo.ylc - flo.dy + 'px';
-
+            //t.top = flo.ylc - flo.dy + 'px';
         }
         tt.left = flo.x + x + 'px';
     };
@@ -414,7 +413,7 @@ function floatHeader(tableId, head) {
             t.display = '';
         }
         if (t.display !== 'none') {
-            t.position = 'absolute';
+            t.position !== 'absolute' ? t.position = 'absolute' : '';
             if (t.top !== flo.ylc - flo.dy + 'px') {
                 t.top = flo.ylc - flo.dy + 'px';
                 t.left = 0 + 'px';
@@ -435,11 +434,11 @@ function floatHeader(tableId, head) {
         } else {
             y = e.target.scrollTop;
             x = e.target.scrollLeft;
-            f = 1
+            f = 1;
         }
         if (flo.sy !== y) {// vertical scrolling
             flo.sy = y;
-            if (f == 0) {
+            if (f === 0) {
                 tf.vsync(x, y);
                 lc.vsync(x, y);
             } else {
