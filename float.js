@@ -37,6 +37,12 @@
 
 function floatHeader(tableId, head) {
     'use strict';
+    var mytable
+            , row = [], flo, myBody, scrollParent, tableParent
+            , i, nc, nr, th, delta, debug = false
+            , k, tf, tlc = {style: null}, lc = {style: null}, lcw = 0;
+
+
     function setAtt(s, o) {
         var opt;
         for (opt in o) {
@@ -138,7 +144,7 @@ function floatHeader(tableId, head) {
             borderRight: '1px solid black',
             height: tf.style.height,
             left: flo.x + 'px',
-            top: flo.y + 'px',
+            top: flo.ylc + 'px',
             width: lcw + 2 + 'px',
             position: 'absolute'}
         );
@@ -208,11 +214,6 @@ function floatHeader(tableId, head) {
         }
         return false; // stop every;
     }
-    var mytable
-            , row = [], flo, myBody, scrollParent, tableParent
-            , i, nc, nr, th, delta, debug = false
-            , k, tf, tlc = {style: null}, lc = {style: null}, lcw = 0;
-
 
     mytable = document.getElementById(tableId);
     myBody = document.getElementById(tableId + '_parent');
@@ -268,8 +269,10 @@ function floatHeader(tableId, head) {
     }
     if (debug) {
         tf.style.display = 'block';
-        tlc.style.display = 'block';
-        lc.style.display = 'block';
+        if (head.nccol > 0) {
+            tlc.style.display = 'block';
+            lc.style.display = 'block';
+        }
     }
     tf.hsync = function(x, y) {
         var t = this.style;
@@ -294,7 +297,7 @@ function floatHeader(tableId, head) {
     };
     tf.vsyncR = function(x, y) {
         var t = this.style;
-        if ((y < flo.y || y > flo.bottom)) {
+        if ((y - 1 < flo.y || y > flo.bottom)) {
             t.display !== 'none' ? t.display = 'none' : '';
             return;
         }
@@ -376,6 +379,7 @@ function floatHeader(tableId, head) {
             return;
         if ((x < flo.x || x > flo.xEdge)) {
             t.display !== 'none' ? t.display = 'none' : '';
+            tt.display = t.display;
             t.position = 'absolute';
             return;
         }
@@ -384,10 +388,11 @@ function floatHeader(tableId, head) {
             tt.top = flo.y + 'px';
         }
         tt.display === 'none' ? tt.display = '' : '';
+        t.top = flo.ylc - flo.dy + 'px';
         if (t.position === 'absolute') {
             t.left = x + 'px';
         }
-        tt.left = flo.x + x + 'px';
+        tt.left = /*flo.x  +*/ x + 'px';
     };
     lc.vsyncR = function(x, y) {
         var t = this.style, tt = this.tlc.style;

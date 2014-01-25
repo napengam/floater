@@ -11,6 +11,7 @@
         <script type="text/javascript" src="float.js"></script>
         <script type="text/javascript"  src='moveToBottom.js'></script>
         <script type="text/javascript">
+            
             function addEvent(obj, ev, fu) {
                 if (obj.addEventListener) {
                     obj.addEventListener(ev, fu, false);
@@ -24,6 +25,7 @@
                 fr1 = document.getElementById('frame1');
                 fr1.style.width = '600px';
                 fr1.style.height = '400px';
+               
 
                 t1 = floatHeader('t1', {ncpth: [1, 2], nccol: 2});
                 t2 = floatHeader('t2');
@@ -217,9 +219,9 @@
                         
                         <h2> In a DIV with style='overflow:scroll'</h2>
                         IE11 (10 9 ) and Opera exhbit a somewhat 'shaky' performance while scrolling<br>
-                        Chrome 32.x ,FF 26 and Safari 5.1.7 perform very smooth 
-                        <div id=t4_parent style="overflow:scroll;width:300px;height:400px">
-                            <table id="t4" class="table">
+                        Chrome 32.x ,FF 26 and Safari 5.1.7 perform very smooth <p>&nbsp;
+                        <div id=t4_parent style="border:1px solid red;overflow:scroll;width:300px;height:400px;margin-left:40px">
+                            <table id="t4" class="table" style="margin-left:0px;border:1px solid yellow">
                                 <tr><th>Identification</th><th>Cell1</th><th>Cell2</th><th>Cell3</th></tr>
                                 <tr><td>Meier</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                                 <tr><td>Schulze</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>

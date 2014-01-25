@@ -1,156 +1,64 @@
-/*
- *	@Author Jaimon Mathew www.jaimon.co.uk
- *  Please see http://jaimonmathew.wordpress.com/2010/03/19/making-scrollable-tables-with-fixed-headers-updated-2/
- */
-(function() {
-    var l = false, e = [];
-    this.ge$ = function(a) {
-        return document.getElementById(a)
-    };
-    this.scrollHeader = function(a) {
-        if (!l) {
-            a = a ? a : window.event;
-            a = a.target ? a.target : a.srcElement;
-            if (a.nodeType == 3)
-                a = a.parentNode;
-            var b = a.id.replace(":scroller", ""), g = ge$(b + ":scroller:fx");
-            a = ge$(b + ":scroller");
-            g.style.left = 0 - a.scrollLeft + "px";
-            if (b = ge$(b + "_CFB")) {
-                g = parseInt(b.getAttribute("dmt"));
-                b.style.marginTop = 0 - (a.scrollTop + g) + "px"
-            }
-        }
-    };
-    this.fxheader = function() {
-        if (!l) {
-            l = true;
-            for (var a = 0; a < e.length; a++) {
-                var b = ge$(e[a].tid), g = e[a].swidth + "";
-                if (g.indexOf("%") >= 0) {
-                    var i = ge$(e[a].tid + ":scroller:fx");
-                    i.style.width = "0px";
-                    g = parseInt(g);
-                    g = (document.body.offsetWidth ? document.body.offsetWidth : window.innerWidth) * g / 100;
-                    i.style.width = "9999px"
-                }
-                b.style.width = parseInt(g - 18) + "px";
-                i = ge$(e[a].tid + ":scroller:fx");
-                i.style.marginLeft = "0px";
-                i.style.display = "";
-                var d = i.childNodes, c;
-                for (c = 0; c < d.length; c++)
-                    i.removeChild(d[c]);
-                var f = b.cloneNode(false);
-                f.id = e[a].tid + "__cN";
-                f.style.width = document.all ? b.offsetWidth + "px" : "auto";
-                f.style.marginTop = "0px";
-                f.style.marginLeft = "0px";
-                d = document.createElement("thead");
-                d.style.padding = "0px";
-                d.style.margin = "0px";
-                for (c = 0; c < e[a].noOfRows; c++) {
-                    var h = b.rows[c].cloneNode(true);
-                    d.appendChild(h)
-                }
-                f.appendChild(d);
-                i.appendChild(f);
-                var k;
-                if (e[a].noOfCols > 0) {
-                    k = f.cloneNode(true);
-                    k.id = e[a].tid + "_CFH"
-                }
-                for (c = d = 0; c < e[a].noOfRows; c++) {
-                    h = f.rows[c].cells;
-                    var m, n = b.rows[c].cells, j;
-                    if (k) {
-                        m = k.rows[c].cells;
-                        for (j = 0; j < h.length; j++)
-                            h[j].style.width = m[j].style.width = n[j].offsetWidth - 3 + "px"
-                    } else
-                        for (j = 0; j < h.length; j++)
-                            h[j].style.width = n[j].offsetWidth - 3 + "px";
-                    d += b.rows[c].offsetHeight
-                }
-                b.style.marginTop = "-" + d + "px";
-                f = e[a].sheight;
-                if (b.offsetHeight < f)
-                    f = b.offsetHeight + 18;
-                h = 0;
-                if (e[a].noOfCols > 0) {
-                    for (c = 0; c < e[a].noOfCols; c++)
-                        h += b.rows[0].cells[c].offsetWidth;
-                    b.style.marginLeft = "-" + h + "px";
-                    b.style.display = "block";
-                    i.style.marginLeft = "-" + h + "px";
-                    ge$(e[a].tid + ":scroller:fxcol").style.width = h + "px";
-                    c = ge$(e[a].tid + ":scroller:fxCH");
-                    i = ge$(e[a].tid + ":scroller:fxCB");
-                    c.innerHTML = "";
-                    i.innerHTML = "";
-                    c.appendChild(k);
-                    c.style.height = d + "px";
-                    i.style.height = f - d + "px";
-                    b = b.cloneNode(true);
-                    b.id = e[a].tid + "_CFB";
-                    b.style.marginLeft = "0px";
-                    b.setAttribute("dmt", d);
-                    i.appendChild(b)
-                }
-                g = parseInt(g) - h + "px";
-                ge$(e[a].tid + ":scroller").style.height = f - d + "px";
-                ge$(e[a].tid + ":scroller").style.width = g;
-                ge$(e[a].tid + ":scroller:fx:OuterDiv").style.height = d + "px";
-                ge$(e[a].tid + ":scroller:fx:OuterDiv").style.width = g
-            }
-            window.onresize = fxheader;
-            l = false
-        }
-    };
-    this.fxheaderInit = function(a, b, g, i) {
-        var d = {}, c = ge$(a);
-        d.tid = a;
-        d.sheight = b;
-        d.swidth = c.width;
-        if (!d.swidth || d.swidth.length == 0) {
-            d.swidth = c.style.width;
-            if (!d.swidth)
-                d.swidth = "100%";
-            if (d.swidth.indexOf("%") == -1)
-                d.swidth = parseInt(d.swidth)
-        }
-        d.noOfRows = g;
-        d.noOfCols = i;
-        if (!ge$(a + ":scroller")) {
-            var f = ge$(a);
-            b = f.parentNode;
-            g = f.nextSibling;
-            c = document.createElement("div");
-            c.id = a + ":scroller";
-            c.style.cssText = "height:auto;overflow-x:auto;overflow-y:auto;width:auto;";
-            c.onscroll = scrollHeader;
-            c.appendChild(f);
-            f = document.createElement("div");
-            f.id = a + ":scroller:fx:OuterDiv";
-            f.style.cssText = "position:relative;width:auto;overflow:hidden;overflow-x:hidden;padding:0px;margin:0px;";
-            f.innerHTML = '<div id="' + a + ':scroller:fx" style="text-align:left;position:relative;width:9999px;padding:0px;margin-left:0px;"><font size="3" color="red">Please wait while loading the table..</font></div>';
-            var h = null;
-            if (i > 0) {
-                h = document.createElement("div");
-                h.id = a + ":scroller:fxcol";
-                h.style.cssText = "width:0px;height:auto;display:block;float:left;overflow:hidden;";
-                h.innerHTML = "<div id='" + a + ":scroller:fxCH' style='width:100%;overflow:hidden;'>&nbsp;</div><div id='" + a + ":scroller:fxCB' style='width:100%;overflow:hidden;'>&nbsp;</div>"
-            }
-            if (g) {
-                h && b.insertBefore(h, g);
-                b.insertBefore(f, g);
-                b.insertBefore(c, g)
-            } else {
-                h && b.appendChild(h);
-                b.appendChild(f);
-                b.appendChild(c)
-            }
-        }
-        e[e.length] = d
+
+
+for (k = 0; k < nr; k++) {
+    if (mytable.rows[k].cells[0].tagName !== 'TH') {
+        break;
     }
-})();
+    row = mytable.rows[k];
+    nc = row.cells.length;
+    for (i = 0; i < nc; i++) { // copy content of header cells from table   
+        th = createHeaderCell(row.cells[i], row.cells[i].offsetTop, i);
+        tf.appendChild(th);
+        th.style.height = row.cells[i].clientHeight + 'px';
+        if (k < head.ncpth.length && i < head.ncpth[k]) {// copy cells into top left corner div  
+            th = createHeaderCell(row.cells[i], row.cells[i].offsetTop, i);
+            tlc.appendChild(th);
+            th.style.height = row.cells[i].clientHeight + 'px';
+        }
+    }
+}
+
+[].every.call(mytable.rows, withRows);
+
+function withRows(row, ri, rows) {
+    if (row.cells[0].tagName === 'TH') {
+        row = mytable.rows[k];
+        nc = row.cells.length;
+        for (i = 0; i < nc; i++) { // copy content of header cells from table   
+            
+            th = updateHeaderCell(tf.childNodes[j++], aCell, aCell.offsetTop, i);
+            tf.appendChild(th);
+            th.style.height = row.cells[i].clientHeight + 'px';
+            if (k < head.ncpth.length && i < head.ncpth[k]) {// copy cells into top left corner div  
+                th = updateHeaderCell(tlc.childNodes[l++], aCell, aCell.offsetTop, i);
+                tlc.appendChild(th);
+                th.style.height = row.cells[i].clientHeight + 'px';
+            }
+        }
+        return true; // next row
+    }
+    tf.style.height = row.offsetTop + row.clientHeight + 'px';
+    tf.rightEdge = 0;
+    ///////////////////////
+    //// left column cells  only
+    ///////////////////////
+    if (head.nccol > 0) {
+        tableParent.appendChild(lc);
+        div = createDivHead(mytable, 'inner_leftColumn_', 0); // entire header
+        lc.appendChild(div);
+        lcw = 0;
+        delta = mytable.rows[head.ncpth.length].offsetTop;
+        for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
+            th = createLeftColumn(row.cells[i], row.cells[i].offsetTop - delta, i, row.rowIndex);
+            lc.appendChild(th);
+        }
+        return true; // next row
+    }
+    lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
+    setLeftColumngeometry(head);
+    lc.style.display = 'none';
+    setTopLeftCornergeometry();
+    tlc.style.display = 'none';
+}
+
+
