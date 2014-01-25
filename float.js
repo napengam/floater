@@ -210,7 +210,7 @@ function floatHeader(tableId, head) {
     }
     var mytable
             , row = [], flo, myBody, scrollParent, tableParent
-            , i, nc, nr, th, delta,debug=false
+            , i, nc, nr, th, delta, debug = false
             , k, tf, tlc = {style: null}, lc = {style: null}, lcw = 0;
 
 
@@ -412,40 +412,41 @@ function floatHeader(tableId, head) {
             return;
         }
     };
-    function scroll(e) {
-        var y, x, f;
-        if (tableParent === document.body) {
+    if (tableParent === document.body) {
+        tf.scroll = function(e) {
+            var y, x;
             y = window.pageYOffset;
             x = window.pageXOffset;
-            f = 0;
-        } else {
-            y = e.target.scrollTop;
-            x = e.target.scrollLeft;
-            f = 1;
-        }
-        if (flo.sy !== y) {// vertical scrolling
-            flo.sy = y;
-            if (f === 0) {
+            if (flo.sy !== y) {// vertical scrolling
+                flo.sy = y;
                 tf.vsync(x, y);
                 lc.vsync(x, y);
-            } else {
+            }
+            if (flo.sx !== x) { // horizontal scrolling
+                flo.sx = x;
+                tf.hsync(x, y);
+                lc.hsync(x, y);
+            }
+        };
+    } else {
+        tf.scroll = function(e) {
+            var y, x;
+            y = e.target.scrollTop;
+            x = e.target.scrollLeft;
+            if (flo.sy !== y) {// vertical scrolling
+                flo.sy = y;
                 tf.vsyncR(x, y);
                 lc.vsyncR(x, y);
             }
-        }
-        if (flo.sx !== x) { // horizontal scrolling
-            flo.sx = x;
-            if (f === 0) {
-                tf.hsync(x, y);
-                lc.hsync(x, y);
-            } else {
+            if (flo.sx !== x) { // horizontal scrolling
+                flo.sx = x;
                 lc.hsyncR(x, y);
             }
-        }
+        };
     }
     tf.sync = function(ri, what) {
         tf.syncRow(ri, what);
-        scroll();
+        tf.scroll();
     };
     tf.syncRow = function(ri, what) { // method to force a new layout of pseudo header
         var mytable, nc, nr, k, i, j, l, th, aCell, row;
@@ -520,7 +521,7 @@ function floatHeader(tableId, head) {
             obj.attachEvent(eev, fu);
         }
     }
-    addEvent(scrollParent, 'scroll', scroll);
+    addEvent(scrollParent, 'scroll', tf.scroll);
     // pointers to corner and left column;
     tf.tlc = tlc;
     tf.lc = lc;
