@@ -178,6 +178,7 @@ function floatHeader(tableId, head) {
         return flo;
     }
 
+
     function withRows(row, ri, rows) { // callback 
         var aCell;
         if (row.cells[0].tagName === 'TH') {
@@ -263,7 +264,6 @@ function floatHeader(tableId, head) {
     tf.style.display = 'none';
     // flo keeps all neccessary geometry
     flo = setFlo(flo);
-
     if (tableParent !== document.body) {
         tableParent.style.position = 'relative';
     }
@@ -418,7 +418,7 @@ function floatHeader(tableId, head) {
         }
     };
     if (tableParent === document.body) {
-        tf.scroll = function(e) {
+        tf.scroll = function() {
             var y, x;
             y = window.pageYOffset;
             x = window.pageXOffset;
@@ -436,8 +436,13 @@ function floatHeader(tableId, head) {
     } else {
         tf.scroll = function(e) {
             var y, x;
-            y = e.target.scrollTop;
-            x = e.target.scrollLeft;
+            if (typeof e !== 'undefined') {
+                y = e.target.scrollTop;
+                x = e.target.scrollLeft;             
+            } else {
+                flo.sy++;
+                flo.xs++;
+            }
             if (flo.sy !== y) {// vertical scrolling
                 flo.sy = y;
                 tf.vsyncR(x, y);
@@ -451,10 +456,12 @@ function floatHeader(tableId, head) {
     }
     tf.sync = function(ri, what) {
         tf.syncRow(ri, what);
+        flo.sx=-1;
+        flo.sy=-1;
         tf.scroll();
     };
     tf.syncRow = function(ri, what) { // method to force a new layout of pseudo header
-        var mytable, nc, nr, k, i, j, l, th, aCell, row;
+        var x,y,mytable, nc, nr, k, i, j, l, th, aCell, row;
         mytable = document.getElementById(this.id.split('_')[1]);
         nr = mytable.rows.length;
         flo = absPos(mytable);
@@ -483,8 +490,8 @@ function floatHeader(tableId, head) {
             setTopLeftCornergeometry();
         }
         setTableHeadgeometry();
-        // flo keeps all neccessary geometry
-        flo = setFlo(flo);
+        // flo keeps all neccessary geometry    
+        flo = setFlo(flo);      
     };
     tf.row = function(ri, what) { // method to force a new layout of pseudo header
         var mytable, nc, k, row, j, i, aCell;
@@ -506,6 +513,10 @@ function floatHeader(tableId, head) {
                 tf.lc.removeChild(tf.lc.childNodes[0]);
             }
         }
+        this.syncLeft();
+    };
+    tf.syncLeft = function() {
+        var aCell, j;
         //////////////////////////////
         /// brute force sync/rearange left columns
         /// //////////////////////////
@@ -518,6 +529,7 @@ function floatHeader(tableId, head) {
         }
         return;
     };
+
     function addEvent(obj, ev, fu) {
         if (obj.addEventListener) {
             obj.addEventListener(ev, fu, false);
