@@ -177,10 +177,8 @@ function floatHeader(tableId, head) {
         flo.sy = -1;
         return flo;
     }
-
-
-    function withRows(row, ri, rows) { // callback 
-        var aCell;
+    function withRows(row, ri) { 
+        var aCell, i;
         if (row.cells[0].tagName === 'TH') {
             ///////////////////////
             //// header column cells  only
@@ -242,12 +240,9 @@ function floatHeader(tableId, head) {
     if (head.nccol > 0) {
         tableParent.appendChild(tlc);
     }
-    ////////////////////////////////////
-    //// borrow the every function from array
-    //// because this loop can be aborted 
-    ////////////////////////////////////
-    [].every.call(mytable.rows, withRows);
-
+    for (i = 0; i < mytable.rows.length; i++) {
+        withRows(mytable.rows[i], i);
+    }
     nr = mytable.rows.length;
     nc = mytable.rows[nr - 1].cells.length;
 
@@ -438,7 +433,7 @@ function floatHeader(tableId, head) {
             var y, x;
             if (typeof e !== 'undefined') {
                 y = e.target.scrollTop;
-                x = e.target.scrollLeft;             
+                x = e.target.scrollLeft;
             } else {
                 flo.sy++;
                 flo.xs++;
@@ -456,12 +451,12 @@ function floatHeader(tableId, head) {
     }
     tf.sync = function(ri, what) {
         tf.syncRow(ri, what);
-        flo.sx=-1;
-        flo.sy=-1;
+        flo.sx = -1;
+        flo.sy = -1;
         tf.scroll();
     };
     tf.syncRow = function(ri, what) { // method to force a new layout of pseudo header
-        var x,y,mytable, nc, nr, k, i, j, l, th, aCell, row;
+        var x, y, mytable, nc, nr, k, i, j, l, th, aCell, row;
         mytable = document.getElementById(this.id.split('_')[1]);
         nr = mytable.rows.length;
         flo = absPos(mytable);
@@ -491,7 +486,7 @@ function floatHeader(tableId, head) {
         }
         setTableHeadgeometry();
         // flo keeps all neccessary geometry    
-        flo = setFlo(flo);      
+        flo = setFlo(flo);
     };
     tf.row = function(ri, what) { // method to force a new layout of pseudo header
         var mytable, nc, k, row, j, i, aCell;
