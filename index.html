@@ -27,10 +27,10 @@
                 fr1.style.height = '400px';
                
 
-                t1 = floatHeader('t1', {ncpth: [1, 2], nccol: 2});
-                t2 = floatHeader('t2');
-                t3 = floatHeader('t3', {ncpth: [1], nccol: 1});
-                t4 = floatHeader('t4', {ncpth: [1], nccol: 1});
+                tt1 = floatHeader('t1', {ncpth: [1, 2], nccol: 2});
+                tt2 = floatHeader('t2');
+                tt3 = floatHeader('t3', {ncpth: [1], nccol: 1});
+                tt4 = floatHeader('t4', {ncpth: [1], nccol: 1});
 
                 moveToBottom('foot');
 
@@ -43,10 +43,10 @@
                     return;
                 }
                 t.deleteRow(i);
-                t1.sync(i, -1);
-                t2.sync(0, 0);
-                t3.sync(0, 0);
-                t4.sync(0, 0);
+                tt1.sync(i, -1);
+                tt2.sync(0, 0);
+                tt3.sync(0, 0);
+                tt4.sync(0, 0);
             }
             function insRow() {
                 var row, cell, t, i = document.getElementById('value').value;
@@ -63,10 +63,10 @@
                 cell.innerHTML = 'ÜÜ' + i;
                 cell = row.insertCell(-1);
                 cell.innerHTML = 'ööööö<br>ÜÜÜÜÜ' + i;
-                t1.sync(i, 1);
-                t2.sync(0, 0);
-                t3.sync(0, 0);
-                t4.sync(0, 0);
+                tt1.sync(i, 1);
+                tt2.sync(0, 0);
+                tt3.sync(0, 0);
+                tt4.sync(0, 0);
             }
         </script>    
     </head>

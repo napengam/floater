@@ -129,3 +129,10 @@ code{
 -o-transition:All 1s ease;
 
 }
+.hgs_rotate{
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    white-space: nowrap; 
+}
