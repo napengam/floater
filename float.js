@@ -91,31 +91,28 @@ function floatHeader(tableId, head) {
         );
         return div;
     }
-    function createHeaderCell(theCell, top, ci) {
+    function createHeaderCell(theCell, top, ci, flag) {
         var div = document.createElement('div');
-        updateHeaderCell(div, theCell, top, ci);
+        div=updateHeaderCell(div, theCell, top, ci, flag);
         return div;
     }
-    function updateHeaderCell(div, theCell, top, ci) {
+    function updateHeaderCell(div, theCell, top, ci, flag) {
+        var p = 'absolute';
         setAtt(div, {className: 'floatHead ' + theCell.className,
             innerHTML: theCell.innerHTML,
+            vAlign: theCell.vAlign,
             cellIndex: ci}
         );
+        if (theCell.hasAttribute("data-rotate") && flag === 1) {
+            p = p;//'relative';
+            div.firstChild.style.top = theCell.clientHeight - theCell.firstChild.clientHeight + 'px';
+        }
         setAtt(div.style, {
             left: theCell.offsetLeft + 'px',
             top: top + 'px',
             width: theCell.clientWidth + 'px',
-            position: 'absolute'
+            position: p
         });
-        if (theCell.hasAttribute("data-rotate")) {
-            div.setAttribute('data-rotate', '');
-            /**
-            setAtt(div.style, {
-                height: theCell.clientWidth + 'px',
-                width: theCell.clientHeight + 'px'
-            });
-            */
-        }
         return div;
     }
     function createLeftColumn(theCell, top, ci, ri) {
@@ -152,7 +149,7 @@ function floatHeader(tableId, head) {
             borderRight: '1px solid black',
             height: tf.style.height,
             left: flo.x + 'px',
-            top: flo.ylc + 'px',
+            top: absPos(mytable.rows[head.ncpth.length]).y + 'px',
             width: lcw + 2 + 'px',
             position: 'absolute'}
         );
@@ -187,7 +184,7 @@ function floatHeader(tableId, head) {
         return flo;
     }
     function withRows(row, ri) {
-        var aCell, i;
+        var aCell, i,th;
         if (row.cells[0].tagName === 'TH') {
             ///////////////////////
             //// header column cells  only
@@ -195,11 +192,11 @@ function floatHeader(tableId, head) {
             nc = row.cells.length;
             for (i = 0; i < nc; i++) { // copy content of header cells from table   
                 aCell = row.cells[i];
-                th = createHeaderCell(aCell, aCell.offsetTop, i);
+                th = createHeaderCell(aCell, aCell.offsetTop, i, 1);
                 tf.appendChild(th);
                 th.style.height = aCell.clientHeight + 'px';
                 if (ri < head.ncpth.length && i < head.ncpth[ri]) {// copy cells into top left corner div  
-                    th = createHeaderCell(aCell, aCell.offsetTop, i);
+                    th = createHeaderCell(aCell, aCell.offsetTop, i, 1);
                     tlc.appendChild(th);
                     th.style.height = aCell.clientHeight + 'px';
                 }
@@ -222,40 +219,7 @@ function floatHeader(tableId, head) {
         }
         return false; // stop every;
     }
-    function rotateDivCell(aDiv) {
-        var maxw = -1, padding = 4;return;
-        ;
-        [].forEach.call(aDiv.childNodes, function(cell) {
-            var w;
-            if (!cell.hasAttribute("data-rotate")) {
-                cell.vAlign = 'bottom';
-                return;
-            }
-            cell.vAlign = 'middle';
-            //cell.innerHTML = '<div class=hgs_rotate>' + cell.innerHTML + '</div>';
-            w = cell.clientWidth;
-            if (w > maxw) {
-                maxw = w;
-                cell.style.height = maxw + padding + 'px';
-            }
-           // cell.firstChild.style.width = cell.firstChild.clientHeight + 'px';
-           cell.style.width = cell.firstChild.clientHeight + 'px';
-        });
-        if (maxw === -1) {
-            return;
-        }
-        [].forEach.call(aDiv.childNodes, function(cell) {
-            var dd;
-            cell.style.height = maxw + padding + 'px';
-            if (!cell.hasAttribute("data-rotate")) {
-                return;
-            }
-            dd = cell.firstChild;
-            dd.style.top = (cell.clientHeight - dd.clientHeight - padding) / 2 + 'px';
-            dd.style.left = '0px';
-            dd.style.position = 'relative';
-        });
-    }
+
 ////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Main /////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -288,11 +252,10 @@ function floatHeader(tableId, head) {
     for (i = 0; i < mytable.rows.length; i++) {
         withRows(mytable.rows[i], i);
     }
+
     nr = mytable.rows.length;
     nc = mytable.rows[nr - 1].cells.length;
-    rotateDivCell(tf);
     if (head.nccol > 0) {
-        rotateDivCell(tlc);
         row = mytable.rows[nr - 1];
         lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
         setLeftColumngeometry(head);

@@ -5,7 +5,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
          <link href="main.css" type="text/css" rel="stylesheet" > 
-        <link href="float.css" type="text/css" rel="stylesheet" >        
+        <link href="float.css" type="text/css" rel="stylesheet" >  
+                <script type="text/javascript" src="vertical.js"></script>
+
         <script type="text/javascript" src="float.js"></script>
         <script type="text/javascript">         
             function addEvent(obj, ev, fu) {
@@ -17,6 +19,7 @@
                 }
             }
             addEvent(window, 'load', function() {
+                rotateHeadCell('t5');
                 tt5=floatHeader('t5',{ncpth:[1],nccol:1});                          
             });
             </script>
@@ -26,7 +29,7 @@
         <hr style='width:1600px;visibility:hidden'>
         <div style="margin-left:100px">
         <table id="t5" class="table"  style="border:1px solid red">
-            <tr><th>Identification</th><th>Cell1</th><th>Cell2</th><th>Cell3</th></tr>
+            <tr><th >Identification</th><th>Cell1</th><th>Cell2</th><th>Cell3</th></tr>
             <tr><td>Meier</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
             <tr><td>Schulze</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>

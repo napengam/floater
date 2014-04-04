@@ -7,7 +7,6 @@
         <link href="float.css" type="text/css" rel="stylesheet" >     
         <style type="text/css" > 
         </style>
-        <script type="text/javascript" src="vertical.js"></script>
         <script type="text/javascript" src="float.js"></script>
         <script type="text/javascript"  src='moveToBottom.js'></script>
         <script type="text/javascript">
@@ -22,11 +21,8 @@
             }
             addEvent(window, 'load', function() {
 
-                fr1 = document.getElementById('frame1');
-                fr1.style.width = '600px';
-                fr1.style.height = '400px';
                
-                 rotateHeadCell('t1');
+
                 tt1 = floatHeader('t1', {ncpth: [1, 2], nccol: 2});
                 tt2 = floatHeader('t2');
                 tt3 = floatHeader('t3', {ncpth: [1], nccol: 1});
@@ -116,7 +112,7 @@
                         <h2> Normal table, two sticky header row2,<br> two sticky left column</h2>
                         <table class=table id="t1" border="1">
                             <tr><th colspan="2">1</th><th colspan="2">22 <img src="calendar_icon.png"></th></tr>
-                            <tr><th>1</th><th>22</th><th data-rotate>333</th><th>4444</th></tr>
+                            <tr><th>1</th><th>22</th><th>333</th><th>4444</th></tr>
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                             <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
