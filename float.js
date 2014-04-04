@@ -39,9 +39,13 @@ function floatHeader(tableId, head) {
     'use strict';
     var mytable
             , row = [], flo, myBody, scrollParent, tableParent
-            , i, nc, nr, th, delta, debug = false
+            , i, nc, nr, th, delta, debug = false, haveFunc=false
             , tf, tlc = {style: null}, lc = {style: null}, lcw = 0;
 
+    if (typeof rotateHeadCell !== 'undefined' && typeof rotateHeadCell === 'function') {
+        rotateHeadCell(tableId);
+        haveFunc=true;
+    }
 
     function setAtt(s, o) {
         var opt;
@@ -91,19 +95,19 @@ function floatHeader(tableId, head) {
         );
         return div;
     }
-    function createHeaderCell(theCell, top, ci, flag) {
+    function createHeaderCell(theCell, top, ci) {
         var div = document.createElement('div');
-        div=updateHeaderCell(div, theCell, top, ci, flag);
+        div = updateHeaderCell(div, theCell, top, ci);
         return div;
     }
-    function updateHeaderCell(div, theCell, top, ci, flag) {
+    function updateHeaderCell(div, theCell, top, ci) {
         var p = 'absolute';
         setAtt(div, {className: 'floatHead ' + theCell.className,
             innerHTML: theCell.innerHTML,
             vAlign: theCell.vAlign,
             cellIndex: ci}
         );
-        if (theCell.hasAttribute("data-rotate") && flag === 1) {
+        if (theCell.hasAttribute("data-rotate") && haveFunc) {
             p = p;//'relative';
             div.firstChild.style.top = theCell.clientHeight - theCell.firstChild.clientHeight + 'px';
         }
@@ -184,7 +188,7 @@ function floatHeader(tableId, head) {
         return flo;
     }
     function withRows(row, ri) {
-        var aCell, i,th;
+        var aCell, i, th;
         if (row.cells[0].tagName === 'TH') {
             ///////////////////////
             //// header column cells  only
@@ -192,11 +196,11 @@ function floatHeader(tableId, head) {
             nc = row.cells.length;
             for (i = 0; i < nc; i++) { // copy content of header cells from table   
                 aCell = row.cells[i];
-                th = createHeaderCell(aCell, aCell.offsetTop, i, 1);
+                th = createHeaderCell(aCell, aCell.offsetTop, i);
                 tf.appendChild(th);
                 th.style.height = aCell.clientHeight + 'px';
                 if (ri < head.ncpth.length && i < head.ncpth[ri]) {// copy cells into top left corner div  
-                    th = createHeaderCell(aCell, aCell.offsetTop, i, 1);
+                    th = createHeaderCell(aCell, aCell.offsetTop, i);
                     tlc.appendChild(th);
                     th.style.height = aCell.clientHeight + 'px';
                 }
