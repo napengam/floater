@@ -38,13 +38,13 @@
 function floatHeader(tableId, head) {
     'use strict';
     var mytable
-            , row = [], flo, myBody, scrollParent, tableParent
-            , i, nc, nr, th, delta, debug = false, haveFunc=false
+            , row = [], flo, myBody, scrollParent, tableParent, padding = 4
+            , i, nc, nr, th, delta, debug = false, haveFunc = false
             , tf, tlc = {style: null}, lc = {style: null}, lcw = 0;
 
     if (typeof rotateHeadCell !== 'undefined' && typeof rotateHeadCell === 'function') {
-        rotateHeadCell(tableId);
-        haveFunc=true;
+        rotateHeadCell(tableId); // defined in vertical.js
+        haveFunc = true;
     }
 
     function setAtt(s, o) {
@@ -54,17 +54,18 @@ function floatHeader(tableId, head) {
         }
         return s;
     }
+
     function absPos(obj) {// return absolute x,y position of obj
-        var ob, pos = {};
-        pos.x = obj.offsetLeft;
-        pos.y = obj.offsetTop;
+        var ob, x = 0, y = 0;
+        x = obj.offsetLeft;
+        y = obj.offsetTop;
         ob = obj.offsetParent;
         while (ob !== null && ob.tagName !== 'BODY') {
-            pos.x += ob.offsetLeft;
-            pos.y += ob.offsetTop;
+            x += ob.offsetLeft;
+            y += ob.offsetTop;
             ob = ob.offsetParent;
         }
-        return pos;
+        return {'x': x, 'y': y};
     }
     function createDivHead(mytable, id, x) {
         var div = document.createElement('div');
@@ -88,7 +89,7 @@ function floatHeader(tableId, head) {
             see: false}
         );
         setAtt(div.style, {zIndex: 12,
-            //background: 'yellow',
+            background: 'yellow',
             left: x + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px',
             position: 'absolute'}
@@ -101,21 +102,25 @@ function floatHeader(tableId, head) {
         return div;
     }
     function updateHeaderCell(div, theCell, top, ci) {
-        var p = 'absolute';
+        var bs = '', es = '';
+        if (!theCell.hasAttribute("data-rotate")) {
+            bs = '<span>';
+            es = '</span>';
+        }
         setAtt(div, {className: 'floatHead ' + theCell.className,
-            innerHTML: theCell.innerHTML,
+            innerHTML: bs + theCell.innerHTML + es,
             vAlign: theCell.vAlign,
             cellIndex: ci}
         );
         if (theCell.hasAttribute("data-rotate") && haveFunc) {
-            p = p;//'relative';
-            div.firstChild.style.top = theCell.clientHeight - theCell.firstChild.clientHeight + 'px';
+
+            div.firstChild.style.top = theCell.clientHeight - theCell.firstChild.clientHeight - padding + 'px';
         }
         setAtt(div.style, {
             left: theCell.offsetLeft + 'px',
             top: top + 'px',
             width: theCell.clientWidth + 'px',
-            position: p
+            position: 'absolute'
         });
         return div;
     }
@@ -140,7 +145,7 @@ function floatHeader(tableId, head) {
         );
         return div;
     }
-    function setLeftColumngeometry(head) {
+    function setLeftColumnGeometry(head) {
         setAtt(lc.style, {
             top: absPos(mytable.rows[head.ncpth.length].cells[0]).y + 'px',
             left: flo.x + 'px',
@@ -148,7 +153,7 @@ function floatHeader(tableId, head) {
             width: lcw + 'px',
             position: 'absolute'});
     }
-    function setTopLeftCornergeometry() {
+    function setTopLeftCornerGeometry() {
         setAtt(tlc.style, {
             borderRight: '1px solid black',
             height: tf.style.height,
@@ -159,7 +164,7 @@ function floatHeader(tableId, head) {
         );
         tf.rightEdge = tlc.rightEdge;
     }
-    function setTableHeadgeometry() {
+    function setTableHeadGeometry() {
         setAtt(tf.style, {
             left: flo.x + 'px',
             top: flo.y + 'px',
@@ -167,7 +172,7 @@ function floatHeader(tableId, head) {
             position: 'absolute'});
     }
     function setFlo(flo) {
-        var nr;
+        var nr, nc;
         flo.dx = 0;
         flo.dy = 0;
         if (tableParent !== document.body) {
@@ -177,6 +182,7 @@ function floatHeader(tableId, head) {
             flo.x = flo.x - flo.dx;
         }
         nr = mytable.rows.length;
+        nc = mytable.rows[nr - 1].cells.length;
         flo.lcw = mytable.rows[nr - 1].cells[nc - 1].clientWidth;
         flo.yEdge = flo.y + mytable.clientHeight - tf.clientHeight - /*last row*/ mytable.rows[nr - 1].clientHeight;
         flo.xEdge = flo.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
@@ -262,15 +268,15 @@ function floatHeader(tableId, head) {
     if (head.nccol > 0) {
         row = mytable.rows[nr - 1];
         lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
-        setLeftColumngeometry(head);
+        setLeftColumnGeometry(head);
         lc.style.display = 'none';
-        setTopLeftCornergeometry();
+        setTopLeftCornerGeometry();
         tlc.style.display = 'none';
     }
 
-    setTableHeadgeometry();
+    setTableHeadGeometry();
     tf.style.display = 'none';
-    // flo keeps all neccessary geometry
+    // flo keeps all neccessary Geometry
     flo = setFlo(flo);
     if (tableParent !== document.body) {
         tableParent.style.position = 'relative';
@@ -318,8 +324,9 @@ function floatHeader(tableId, head) {
     };
     lc.hsync = function(x, y) {
         var t = this.style, tt = this.tlc.style;
-        if (t === null)
+        if (t === null) {
             return;
+        }
         if ((x - 1 < flo.x || x > flo.xEdge)) {
             t.display !== 'none' ? t.display = 'none' : '';
             t.position = 'absolute';
@@ -346,11 +353,12 @@ function floatHeader(tableId, head) {
     };
     lc.vsync = function(x, y) {
         var t = this.style, tt = this.tlc.style;
-        if (t === null)
+        if (t === null) {
             return;
+        }
         if (y > flo.bottom || x > flo.xEdge) {
             t.display !== 'none' ? t.display = 'none' : '';
-            tt.display = t.display;
+            tt.display === t.display ? '' : tt.display = t.display;
             return;
         }
         if (flo.x < x - 1 && t.display === 'none') {
@@ -383,17 +391,18 @@ function floatHeader(tableId, head) {
     };
     lc.hsyncR = function(x, y) {
         var t = this.style, tt = this.tlc.style;
-        if (t === null)
+        if (t === null) {
             return;
+        }
         if ((x < flo.x || x > flo.xEdge)) {
             t.display !== 'none' ? t.display = 'none' : '';
-            tt.display = t.display;
+            tt.display === t.display ? '' : tt.display = t.display;
             t.position = 'absolute';
             return;
         }
         t.display === 'none' ? t.display = '' : '';
         if (tt.display === 'none') {
-            tt.top = flo.y + 'px';
+            tt.top = flo.y + y + 'px';
         }
         tt.display === 'none' ? tt.display = '' : '';
         t.top = flo.ylc - flo.dy + 'px';
@@ -404,8 +413,9 @@ function floatHeader(tableId, head) {
     };
     lc.vsyncR = function(x, y) {
         var t = this.style, tt = this.tlc.style;
-        if (t === null)
+        if (t === null) {
             return;
+        }
         if (y > flo.bottom) {
             t.display !== 'none' ? t.display = 'none' : '';
             tt.display = t.display;
@@ -425,42 +435,48 @@ function floatHeader(tableId, head) {
             return;
         }
     };
+    function debugR(w, t, tt) {
+        var dd = document.getElementById('debug');
+        dd.innerHTML = 'wo=' + w + '    tt.top=' + tt.top + '  tt.left=' + tt.left + ' t.top=' + t.top + '  t.left=' + t.left;
+    }
+    function scrollBody() {
+        var y, x;
+        y = window.pageYOffset;
+        x = window.pageXOffset;
+        if (flo.sy !== y) {// vertical scrolling
+            flo.sy = y;
+            tf.vsync(x, y);
+            lc.vsync(x, y);
+        }
+        if (flo.sx !== x) { // horizontal scrolling
+            flo.sx = x;
+            tf.hsync(x, y);
+            lc.hsync(x, y);
+        }
+    }
+    function scrollDiv(e) {
+        var y, x;
+        if (typeof e !== 'undefined') {
+            y = e.target.scrollTop;
+            x = e.target.scrollLeft;
+        } else {
+            flo.sy++;
+            flo.sx++;
+        }
+        if (flo.sy !== y) {// vertical scrolling
+            flo.sy = y;
+            tf.vsyncR(x, y);
+            lc.vsyncR(x, y);
+        }
+        if (flo.sx !== x) { // horizontal scrolling
+            flo.sx = x;
+            lc.hsyncR(x, y);
+        }
+    }
     if (tableParent === document.body) {
-        tf.scroll = function() {
-            var y, x;
-            y = window.pageYOffset;
-            x = window.pageXOffset;
-            if (flo.sy !== y) {// vertical scrolling
-                flo.sy = y;
-                tf.vsync(x, y);
-                lc.vsync(x, y);
-            }
-            if (flo.sx !== x) { // horizontal scrolling
-                flo.sx = x;
-                tf.hsync(x, y);
-                lc.hsync(x, y);
-            }
-        };
+        tf.scroll = scrollBody;
     } else {
-        tf.scroll = function(e) {
-            var y, x;
-            if (typeof e !== 'undefined') {
-                y = e.target.scrollTop;
-                x = e.target.scrollLeft;
-            } else {
-                flo.sy++;
-                flo.xs++;
-            }
-            if (flo.sy !== y) {// vertical scrolling
-                flo.sy = y;
-                tf.vsyncR(x, y);
-                lc.vsyncR(x, y);
-            }
-            if (flo.sx !== x) { // horizontal scrolling
-                flo.sx = x;
-                lc.hsyncR(x, y);
-            }
-        };
+        tf.scroll = scrollDiv;
     }
     tf.sync = function(ri, what) {
         tf.syncRow(ri, what);
@@ -490,15 +506,16 @@ function floatHeader(tableId, head) {
             }
         }
         if (head.nccol > 0) {
-            if (what !== 99)
+            if (what !== 99) {
                 this.row(ri, what);
+            }
             row = mytable.rows[head.ncpth.length];
             lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
-            setLeftColumngeometry(head);
-            setTopLeftCornergeometry();
+            setLeftColumnGeometry(head);
+            setTopLeftCornerGeometry();
         }
-        setTableHeadgeometry();
-        // flo keeps all neccessary geometry    
+        setTableHeadGeometry();
+        // flo keeps all neccessary Geometry    
         flo = setFlo(flo);
     };
     tf.row = function(ri, what) { // method to force a new layout of pseudo header
