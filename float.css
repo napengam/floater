@@ -45,4 +45,10 @@
 
 .table tr:hover{
     background:#edebe0;
+    border-collapse:collapse;
+    border:1px solid black;
+}
+.table, .table th, .table td {
+    border-collapse:collapse;
+    border:1px solid black;
 }
