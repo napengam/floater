@@ -1,5 +1,5 @@
 /*************************************************************************
- float.js 1.0 Copyright (c) 2013 Heinrich Schweitzer
+ float.js 1.0 Copyright (c) 2013 - 2014 Heinrich Schweitzer
  Contact me at hgs@hgsweb.de
  This copyright notice MUST stay intact for use.
  
@@ -39,7 +39,7 @@ function floatHeader(tableId, head) {
     'use strict';
     var mytable
             , row = [], flo, myBody, scrollParent, tableParent, padding = 4
-            , i, nc, nr, th, delta, debug = false, topDif = 0
+            , i, nc, nr, th, delta, debug = false, topDif = 0, leftDif = 0
             , tf, tlc = {style: null}, lc = {style: null}, lcw = 0;
 
     function rotate90(tableId) {
@@ -225,7 +225,7 @@ function floatHeader(tableId, head) {
         flo.xEdge = flo.x + mytable.clientWidth - lcw - /*lastcell*/ mytable.rows[nr - 1].cells[nc - 1].clientWidth;
         flo.right = flo.x + mytable.clientWidth - 1;
         flo.bottom = flo.y + mytable.clientHeight - 1;
-        flo.ylc = absPos(mytable.rows[head.ncpth.length]).y - topDif;
+        flo.ylc = absPos(mytable.rows[head.ncpth.length]).y;
         flo.sx = -1;
         flo.sy = -1;
         return flo;
@@ -293,7 +293,11 @@ function floatHeader(tableId, head) {
         if (typeof head.topDif !== 'undefined') {
             topDif = head.topDif+2;
         }
-        flo.y -= topDif;
+        leftDif=0;
+        if (typeof head.leftDif !== 'undefined') {
+            leftDif = head.leftDif;
+        }
+        
         tlc = createDivHead(mytable, 'float_corner', flo.x); // top left corener
         lc = createDivLeftColumn(mytable, flo.x); //  left column      
         tableParent.appendChild(lc);
@@ -338,8 +342,8 @@ function floatHeader(tableId, head) {
         var t = this.style;
         if (t.position === 'fixed') {
             t.position = 'absolute';
-            t.left = flo.x + 'px';
-            t.top = y+topDif + 'px';
+            t.left = flo.x+ 'px';
+            t.top = y+1-1 + 'px';
         }
     };
     tf.vsync = function(x, y) {
@@ -351,7 +355,7 @@ function floatHeader(tableId, head) {
         t.display === 'none' ? t.display = '' : '';
         if (t.position !== 'fixed') {
             t.position = 'fixed';
-            t.left = flo.x - x + 'px';
+            t.left = flo.x - x+leftDif + 'px';
             t.top = topDif + 'px';
         }
     };
@@ -383,13 +387,13 @@ function floatHeader(tableId, head) {
         t.display === 'none' && y < flo.bottom ? t.display = '' : '';
         if (t.position === 'absolute') {
             t.position = 'fixed';
-            t.left = 0 + 'px';
-            t.top = flo.ylc - y+topDif + 'px';
+            t.left = leftDif + 'px';
+            t.top = (flo.ylc - y )+topDif + 'px';
         }
         tt.display === 'none' && y < flo.bottom ? tt.display = '' : '';
         if (tt.position === 'absolute') { // the corner
             tt.position = 'fixed';
-            tt.left = '0px';
+            tt.left =leftDif+ 'px';
             if (y <= flo.y) {
                 tt.top = (flo.y - y) +topDif+ 'px';
             } else {
@@ -414,8 +418,8 @@ function floatHeader(tableId, head) {
         if (t.display !== 'none') {
             if (t.position === 'fixed') {
                 t.position = 'absolute';
-                t.top = flo.ylc+topDif + 'px';
-                t.left = parseInt(t.left, 10) + x + 'px';
+                t.top = flo.ylc+1-1 + 'px';
+                t.left = parseInt(t.left, 10) + x-leftDif + 'px';
                 return;
             }
         }
@@ -424,12 +428,12 @@ function floatHeader(tableId, head) {
                 if (y > flo.y) {
                     tt.position = 'fixed';
                     tt.top = topDif + 'px';
-                    tt.left = 0 + 'px';
+                    tt.left = leftDif + 'px';
                 }
             } else {
                 if (y < flo.y) {
                     tt.position = 'absolute';
-                    tt.top = flo.y +topDif + 'px';
+                    tt.top = flo.y +1-1 + 'px';
                     tt.left = x + 'px';
                 }
             }
@@ -487,8 +491,8 @@ function floatHeader(tableId, head) {
     }
     function scrollBody() {
         var y, x;
-        y = window.pageYOffset;
-        x = window.pageXOffset;
+        y = window.pageYOffset+topDif;
+        x = window.pageXOffset+leftDif;
 
         if (flo.sy !== y) {// vertical scrolling
             flo.sy = y;
@@ -564,7 +568,7 @@ function floatHeader(tableId, head) {
         setTableHeadGeometry();
         // flo keeps all neccessary Geometry    
         flo = setFlo(flo);
-        flo.y -= topDif;
+        //flo.y -= topDif;
     };
     tf.row = function(ri, what) { // method to force a new layout of pseudo header
         var mytable, nc, k, row, i, aCell;

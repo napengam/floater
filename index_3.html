@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Floating header</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" >   
+        <link href="main.css" type="text/css" rel="stylesheet" > 
+        <link href="float.css" type="text/css" rel="stylesheet" >     
+        <style type="text/css" > 
+        </style>
+        <script type="text/javascript" src="float.js"></script>
+        <script type="text/javascript"  src='moveToBottom.js'></script>
+        <script type="text/javascript">
+            function addEvent(obj, ev, fu) {
+                if (obj.addEventListener) {
+                    obj.addEventListener(ev, fu, false);
+                } else {
+                    var eev = 'on' + ev;
+                    obj.attachEvent(eev, fu);
+                }
+            }
+            addEvent(window, 'load', function() {
+                tt1 = floatHeader('t1', {ncpth: [1], nccol: 1,topDif:130,leftDif:200});
+                
+            });
+            function delRow() {
+                var t, i = document.getElementById('value').value * 1;
+                t = document.getElementById('t1');
+                if (i < 2 || i >= t.rows.length) {
+                    return;
+                }
+                t.deleteRow(i);
+                tt1.sync(i, -1);
+                
+            }
+            function insRow() {
+                var row, cell, t, i = document.getElementById('value').value;
+                t = document.getElementById('t1');
+                if (i < 2 || i >= t.rows.length) {
+                    return;
+                }
+                row = t.insertRow(i);
+                cell = row.insertCell(-1);
+                cell.innerHTML = 'öööööööööööööööööööööÜÜÜÜÜÜÜÜÜ' + i;
+                cell = row.insertCell(-1);
+                cell.innerHTML = 'ööü' + i;
+                cell = row.insertCell(-1);
+                cell.innerHTML = 'ÜÜ' + i;
+                cell = row.insertCell(-1);
+                cell.innerHTML = 'ööööö<br>ÜÜÜÜÜ' + i;
+                tt1.sync(i, 1);
+               
+            }
+        </script>    
+    </head>
+    <body>
+        <div style="border-bottom:4px solid red ;width:100%;background:white;position:fixed;top:0px;left:0px;;z-Index:100"><p>top fixed<hr>
+         <p style='margin-left:300px'>
+                Delete or insert rows within the table below to see effect on left column and headers<br>
+                Rowindex : <input id=value type='text' size='2' value='13'>
+                <button  onclick='delRow()'>Delete</button>
+                <button  onclick='insRow()'>Insert</button>
+            </p></div>
+        <div style="border-right:4px solid red ;background:white;position:fixed;top:130px;left:0px;width:200px;;z-Index:100"><p>left fixed<hr style="height:1000px;width:1px"></hr></div>
+        <div class="content" style="margin-top:130px;margin-left:200px">          
+                <table id="t1" class="table" style="margin-left:0px;border:1px solid yellow">
+                    <tr><th >Identification</th><th>Cell1</th><th>Cell2</th><th>Cell3</th></tr>
+                    <tr><td>Meier</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>Schulze</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td><b>HELLO</b></td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>Müller</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td><a href='hgsweb.de'>Schweitzer</a></td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td></td><td>bbbbbbbbb</td><td></td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td><b><u>GREECE</u></b></td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>myDates <img src="calendar_icon.png"></td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbbbbbbbbbbbbbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>Meier</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>Schulze</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td><b>HELLO</b></td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>Müller</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td><a href='hgsweb.de'>Schweitzer</a></td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td></td><td>bbbbbbbbb</td><td></td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td><b><u>GREECE</u></b></td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>myDates <img src="calendar_icon.png"></td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbbbbbbbbbbbbbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                    <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
+                </table>
+         
+        </div>
+        
+        <div id="debug"></div>
+        <div style="width:2400px;height:2400px;visibility:hidden;"></div>
+
+    </body>
+</html>
