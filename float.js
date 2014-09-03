@@ -343,7 +343,7 @@ function floatHeader(tableId, head) {
         if (t.position === 'fixed') {
             t.position = 'absolute';
             t.left = flo.x+ 'px';
-            t.top = y+1-1 + 'px';
+            t.top = y + 'px';
         }
     };
     tf.vsync = function(x, y) {
@@ -418,7 +418,7 @@ function floatHeader(tableId, head) {
         if (t.display !== 'none') {
             if (t.position === 'fixed') {
                 t.position = 'absolute';
-                t.top = flo.ylc+1-1 + 'px';
+                t.top = flo.ylc + 'px';
                 t.left = parseInt(t.left, 10) + x-leftDif + 'px';
                 return;
             }
@@ -433,7 +433,7 @@ function floatHeader(tableId, head) {
             } else {
                 if (y < flo.y) {
                     tt.position = 'absolute';
-                    tt.top = flo.y +1-1 + 'px';
+                    tt.top = flo.y  + 'px';
                     tt.left = x + 'px';
                 }
             }
