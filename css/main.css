@@ -127,7 +127,6 @@ code{
 -webkit-transition:All 1s ease;
 -moz-transition:All 1s ease;
 -o-transition:All 1s ease;
-
 }
 .hgs_rotate{
     -webkit-transform: rotate(-90deg);
