@@ -8,7 +8,6 @@
         <style type="text/css" > 
         </style>
         <script type="text/javascript" src="../js/float.js"></script>
-       
         <script type="text/javascript">
             function addEvent(obj, ev, fu) {
                 if (obj.addEventListener) {
@@ -28,8 +27,7 @@
                     return;
                 }
                 t.deleteRow(i);
-                tt1.sync(i, -1);
-                
+                tt1.sync(i, -1);               
             }
             function insRow() {
                 var row, cell, t, i = document.getElementById('value').value;
@@ -93,10 +91,8 @@
                     <tr><td>aaaaaaa</td><td>bbbbbbbbbbbbbbbbbbbbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                     <tr><td>aaaaaaa</td><td>bbbbbbbbb</td><td>cccccccccc</td><td>dddddddddddd</td></tr>
                 </table>        
-        </div>
-        
+        </div>       
         <div id="debug"></div>
         <div style="width:2400px;height:2400px;visibility:hidden;"></div>
-
     </body>
 </html>
