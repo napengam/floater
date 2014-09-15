@@ -1,50 +1,61 @@
 .outerFloatHead{             
     margin:0;
     padding:0;            
+    border-top:0px solid black;             
     border-right:0px solid black;             
     border-left:0px solid black; 
     background:white;
+    position:absolute;
+    background-image: url("../icons/stripes.gif"); 
+    background-repeat:repeat;
+    font-family:'Courier New',Courier,monospace;
 }
 .floatHead{            
     margin:0;
     padding:0px;
     border-color: black;
-    text-align: center;             
+    text-align: center;            
+    position:absolute;
     border:0;              
     background:white;                             
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
+    border-left: 0px solid black;
+    border-bottom: 0px solid black;
     font-weight:bold;
+    background-image: url("../icons/stripes.gif"); 
+    background-repeat:repeat;
+    font-family:'Courier New',Courier,monospace;
 }
+
 .floatCorner{            
     margin:0;
     padding:0px;
     border-color: black;
     text-align: center;            
-   
+    position:absolute;
     border:0;              
     background:#dbd7c6;                        
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
+    border-left: 0px solid black;
+    border-bottom: 0px solid black;
     font-weight:bold;
+    background-image: url("../icons/stripes.gif"); 
+    background-repeat:repeat;
+    font-family:'Courier New',Courier,monospace;
+
 }
 .floatCol{            
     margin:0;
-    padding:0px;
+    padding-bottom:0px;
     border-color: black;
-    text-align: left;       
-    vertical-align:middle;
-              
-    background:#edebe0;                           
-    border: 1px solid blue; 
-    display:table-cell;
-    vertical-align:middle;
+    text-align: left;            
+    position:absolute;
+    border:0;                                      
+    border: 0px solid black;    
+    font-family: 'Courier New',Courier,monospace;
+    background-image: url("../icons/stripes.gif"); 
 }
 
 .table tr:hover{
     background:#edebe0;
-    border-collapse:collapse;
-    border:1px solid black;
 }
 .table, .table th, .table td {
     border-collapse:collapse;
