@@ -148,6 +148,7 @@ function floatHeader(tableId, head) {
         setAtt(div, {className: 'floatHead ' + theCell.className,
             innerHTML: bs + theCell.innerHTML + es,
             vAlign: theCell.vAlign,
+            title:theCell.title,
             cellIndex: ci}
         );
         if (theCell.hasAttribute("data-rotate")) {
@@ -307,7 +308,7 @@ function floatHeader(tableId, head) {
     } else {
         topDif = 0;
         if (typeof head.topDif !== 'undefined') {
-            topDif = head.topDif + 2;
+            topDif = head.topDif + 0;
         }
         leftDif = 0;
         if (typeof head.leftDif !== 'undefined') {
@@ -515,9 +516,7 @@ function floatHeader(tableId, head) {
             flo.y = absPos(mytable).y;
             flo.x = absPos(mytable).x;
             flo = setFlo(flo);
-
         }
-
         if (flo.sy !== y) {// vertical scrolling
             flo.sy = y;
             tf.vsync(x, y);
