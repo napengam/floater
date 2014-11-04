@@ -3,6 +3,8 @@ floater
 
 flaoting / fixed header for tables
 
+A demo is located here <a hrfe='http://hgsweb.de/floater'>hgsweb.de/floater</a>
+
 A small JavaScript file the fakes table headers 
 by copying content from TH cells into DIVs .
 
