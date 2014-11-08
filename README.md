@@ -9,6 +9,12 @@ A small JavaScript file implementing sticky table headers and
 sticky left columns to give you the freeze pane functionality 
 as you find it in EXCEL-Spreadsheets.
 
+This is achieved by using copies of the table header, all the left columns and
+the top left corner, as a header for the left columns.
+
+These elements are then placed on top or to the left of the table, using a style.position
+value of 'fixed' or 'absolute' , depending on the element and scroll direction.
+
 For details regarding usage and implementation please see 
 files index.html and float.js 
 
