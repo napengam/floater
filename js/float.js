@@ -44,7 +44,7 @@ function floatHeader(tableId, head) {
 
     function rotate90(tableId) {
         var aRows = document.getElementById(tableId).rows, padding = 4;
-        [].every.call(aRows, function(row) {
+        [].every.call(aRows, function (row) {
             if (row.cells[0].tagName !== 'TH') {
                 return false;
             }
@@ -53,7 +53,7 @@ function floatHeader(tableId, head) {
         });
         function rotateCell(row) {
             var maxw = -1;
-            [].forEach.call(row.cells, function(cell) {
+            [].forEach.call(row.cells, function (cell) {
                 var w;
                 if (!cell.hasAttribute("data-rotate")) {
                     cell.vAlign = 'bottom';
@@ -71,7 +71,7 @@ function floatHeader(tableId, head) {
             if (maxw === -1) {
                 return;
             }
-            [].forEach.call(row.cells, function(cell) {
+            [].forEach.call(row.cells, function (cell) {
                 var dd;
                 if (!cell.hasAttribute("data-rotate")) {
                     return;
@@ -115,7 +115,8 @@ function floatHeader(tableId, head) {
             width: mytable.clientWidth + 'px',
             left: x + 'px',
             position: 'absolute',
-           // background: 'black',
+            background: 'black',
+            display: 'none',
             zIndex: 15
         }
         );
@@ -127,10 +128,11 @@ function floatHeader(tableId, head) {
             className: 'outerFloatHead'}
         );
         setAtt(div.style, {zIndex: 12,
-           // background: 'black',
+            background: 'black',
             left: x + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px',
-            position: 'absolute'}
+            position: 'absolute',
+            display: 'none'}
         );
         return div;
     }
@@ -148,7 +150,7 @@ function floatHeader(tableId, head) {
         setAtt(div, {className: 'floatHead ' + theCell.className,
             innerHTML: bs + theCell.innerHTML + es,
             vAlign: theCell.vAlign,
-            title:theCell.title,
+            title: theCell.title,
             cellIndex: ci}
         );
         if (theCell.hasAttribute("data-rotate")) {
@@ -156,16 +158,17 @@ function floatHeader(tableId, head) {
         }
         cpStyle = window.getComputedStyle(theCell, null);
         setAtt(div.style, {
+            background: theCell.style.background,
             left: theCell.offsetLeft + 'px',
             top: top + 'px',
             width: theCell.clientWidth + 'px',
             position: 'absolute',
-            borderTop: cpStyle.borderTopWidth+' '+cpStyle.borderTopStyle+' '+cpStyle.borderTopColor,
-            borderLeft: cpStyle.borderLeftWidth+' '+cpStyle.borderLeftStyle+' '+cpStyle.borderLeftColor,
-            borderBottom: cpStyle.borderBottomWidth+' '+cpStyle.borderBottomStyle+' '+cpStyle.borderBottomColor,
-            borderRight: cpStyle.borderRightWidth+' '+cpStyle.borderRightStyle+' '+cpStyle.borderRightColor,
+            borderTop: cpStyle.borderTopWidth + ' ' + cpStyle.borderTopStyle + ' ' + cpStyle.borderTopColor,
+            borderLeft: cpStyle.borderLeftWidth + ' ' + cpStyle.borderLeftStyle + ' ' + cpStyle.borderLeftColor,
+            borderBottom: cpStyle.borderBottomWidth + ' ' + cpStyle.borderBottomStyle + ' ' + cpStyle.borderBottomColor,
+            borderRight: cpStyle.borderRightWidth + ' ' + cpStyle.borderRightStyle + ' ' + cpStyle.borderRightColor,
             fontFamily: cpStyle.fontFamily,
-            fontSize:cpStyle.fontSize
+            fontSize: cpStyle.fontSize
         });
         return div;
     }
@@ -188,14 +191,13 @@ function floatHeader(tableId, head) {
             top: top + 'px',
             width: theCell.clientWidth + 'px',
             height: theCell.clientHeight + 'px',
-            borderTop: cpStyle.borderTopWidth+' '+cpStyle.borderTopStyle+' '+cpStyle.borderTopColor,
-            borderLeft: cpStyle.borderLeftWidth+' '+cpStyle.borderLeftStyle+' '+cpStyle.borderLeftColor,
-            borderBottom: cpStyle.borderBottomWidth+' '+cpStyle.borderBottomStyle+' '+cpStyle.borderBottomColor,
-            borderRight: cpStyle.borderRightWidth+' '+cpStyle.borderRightStyle+' '+cpStyle.borderRightColor,
+            borderTop: cpStyle.borderTopWidth + ' ' + cpStyle.borderTopStyle + ' ' + cpStyle.borderTopColor,
+            borderLeft: cpStyle.borderLeftWidth + ' ' + cpStyle.borderLeftStyle + ' ' + cpStyle.borderLeftColor,
+            borderBottom: cpStyle.borderBottomWidth + ' ' + cpStyle.borderBottomStyle + ' ' + cpStyle.borderBottomColor,
+            borderRight: cpStyle.borderRightWidth + ' ' + cpStyle.borderRightStyle + ' ' + cpStyle.borderRightColor,
             fontFamily: cpStyle.fontFamily,
-            fontSize:cpStyle.fontSize,
+            fontSize: cpStyle.fontSize,
             position: 'absolute'}
-                
         );
         return div;
     }
@@ -355,7 +357,7 @@ function floatHeader(tableId, head) {
             lc.style.display = 'block';
         }
     }
-    tf.hsync = function(x, y) {
+    tf.hsync = function (x, y) {
         var t = this.style;
         if (t.position === 'fixed') {
             t.position = 'absolute';
@@ -363,7 +365,7 @@ function floatHeader(tableId, head) {
             t.top = y + 'px';
         }
     };
-    tf.vsync = function(x, y) {
+    tf.vsync = function (x, y) {
         var t = this.style;
         if ((y < flo.y || y > flo.bottom)) {
             t.display !== 'none' ? t.display = 'none' : '';
@@ -376,7 +378,7 @@ function floatHeader(tableId, head) {
             t.top = topDif + 'px';
         }
     };
-    tf.vsyncR = function(x, y) {
+    tf.vsyncR = function (x, y) {
         var t = this.style;
         if ((y - 1 < flo.y || y > flo.bottom)) {
             t.display !== 'none' ? t.display = 'none' : '';
@@ -389,7 +391,7 @@ function floatHeader(tableId, head) {
             t.top = y + 'px';
         }
     };
-    lc.hsync = function(x, y) {
+    lc.hsync = function (x, y) {
         var t = this.style, tt = this.tlc.style;
         if (t === null) {
             return;
@@ -418,7 +420,7 @@ function floatHeader(tableId, head) {
             }
         }
     };
-    lc.vsync = function(x, y) {
+    lc.vsync = function (x, y) { 
         var t = this.style, tt = this.tlc.style;
         if (t === null) {
             return;
@@ -456,7 +458,7 @@ function floatHeader(tableId, head) {
             }
         }
     };
-    lc.hsyncR = function(x, y) {
+    lc.hsyncR = function (x, y) {
         var t = this.style, tt = this.tlc.style;
         if (t === null) {
             return;
@@ -478,7 +480,7 @@ function floatHeader(tableId, head) {
         }
         tt.left = /*flo.x  +*/ x + 'px';
     };
-    lc.vsyncR = function(x, y) {
+    lc.vsyncR = function (x, y) {
         var t = this.style, tt = this.tlc.style;
         if (t === null) {
             return;
@@ -516,7 +518,9 @@ function floatHeader(tableId, head) {
             flo.y = absPos(mytable).y;
             flo.x = absPos(mytable).x;
             flo = setFlo(flo);
+
         }
+
         if (flo.sy !== y) {// vertical scrolling
             flo.sy = y;
             tf.vsync(x, y);
@@ -552,17 +556,11 @@ function floatHeader(tableId, head) {
     } else {
         tf.scroll = scrollDiv;
     }
-    tf.sync = function(ri, what) {
-        tf.syncRow(ri, what);
-        flo.sx = -1;
-        flo.sy = -1;
-        tf.scroll();
-    };
-    tf.syncRow = function(ri, what) { // method to force a new layout of pseudo header
-        var mytable, nc, nr, k, i, j, l, th, aCell, row;
-        mytable = document.getElementById(this.id.split('_')[1]);
+    function copyHeaderAndCorner(mytable,head) {     
+        var i,j,k,l,nr,nc,row,aCell,th;
         nr = mytable.rows.length;
-        flo = absPos(mytable);
+        tf.style.display='none';
+        tlc.style.display='none';
         for (k = 0, j = 0, l = 0; k < nr; k++) {
             if (mytable.rows[k].cells[0].tagName !== 'TH') {
                 break;
@@ -579,29 +577,39 @@ function floatHeader(tableId, head) {
                 }
             }
         }
+        tf.style.display='';
+        tlc.style.display='';     
+    }
+    tf.sync = function (ri, what) {
+        tf.syncRow(ri, what);
+        flo.sx = -1;
+        flo.sy = -1;
+        tf.scroll();
+    };
+    tf.syncRow = function (ri, what) { // method to force a new layout of pseudo header
+        var aRow;      
+        flo = absPos(mytable);
+        copyHeaderAndCorner(mytable,head);
         if (head.nccol > 0) {
             if (what !== 99) {
                 this.row(ri, what);
             }
-            row = mytable.rows[head.ncpth.length];
-            lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
+            aRow = mytable.rows[head.ncpth.length];
+            lcw = aRow.cells[head.nccol - 1].offsetLeft + aRow.cells[head.nccol - 1].clientWidth;
             setLeftColumnGeometry(head);
             setTopLeftCornerGeometry();
         }
         setTableHeadGeometry();
         // flo keeps all neccessary Geometry    
-        flo = setFlo(flo);
-        //flo.y -= topDif;
+        flo = setFlo(flo);     
     };
-    tf.row = function(ri, what) { // method to force a new layout of pseudo header
-        var mytable, nc, k, row, i, aCell;
-        mytable = document.getElementById(this.id.split('_')[1]);
+    tf.row = function (ri, what) {
+        var k, row, i, aCell;
         nr = mytable.rows.length;
         ri = ri * 1;
         what = what * 1;
-        if (what === 1) {// insert        
+        if (what === 1) {// insert a pseudo row     
             row = mytable.rows[ri];
-            nc = row.cells.length;
             for (i = 0; i < head.nccol; i++) { // copy content of column cells from table  
                 aCell = row.cells[i];
                 th = createLeftColumn(aCell, aCell.offsetTop - delta, i, ri);
@@ -615,20 +623,23 @@ function floatHeader(tableId, head) {
         }
         this.syncLeft();
     };
-    tf.syncLeft = function() {
-        var nr, aCell, j, k, i, ntc;
+    tf.syncLeft = function () {
+        var nr, aCell, j, k, i, ntc, tflccn;
         //////////////////////////////
         /// brute force sync/rearange left columns
         /// //////////////////////////
         nr = mytable.rows.length;
         ntc = tf.lc.childNodes.length;
+        tflccn = tf.lc.childNodes;
+        tf.lc.style.display = 'none'; // to avoid DOM repaint
         for (k = head.ncpth.length, j = 0; k < nr; k++) {
             row = mytable.rows[k];
             for (i = 0; i < head.nccol && j < ntc; i++, j++) { // copy content of column cells from table   
                 aCell = row.cells[i];
-                updateLeftColumn(tf.lc.childNodes[j], aCell, aCell.offsetTop - delta, i, row.rowIndex);
+                updateLeftColumn(tflccn[j], aCell, aCell.offsetTop - delta, i, row.rowIndex);
             }
         }
+        tf.lc.style.display = ''; // go back to previous state
         return;
     };
 
