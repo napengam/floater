@@ -11,7 +11,8 @@ as you find it in EXCEL-Spreadsheets.
 
 For details regarding usage and implementation please see 
 files index.html and float.js 
-Avery simple overview is located at <a href='http://slides.com/heinzschweitzer/freeze#/' > Slides.com </a>
+
+A very simple overview is located at <a href='http://slides.com/heinzschweitzer/freeze#/' > Slides.com </a>
 
 
 *15.01.2014
