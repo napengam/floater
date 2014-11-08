@@ -3,7 +3,7 @@ floater
 
 fixed/sticky header and left columns for tables
 
-A demo is located here <a href='http://hgsweb.de/floater'>hgsweb.de/floater</a>
+A demo is located here <a href='http://hgsweb.de/floater/html'>hgsweb.de/floater</a>
 
 A small JavaScript file implementing sticky table headers and 
 sticky left columns to give you the freeze pane functionality 
