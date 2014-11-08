@@ -1,39 +1,24 @@
 floater
 =======
 
-flaoting / fixed header for tables
+fixed/sticky header and left columns for tables
 
 A demo is located here <a href='http://hgsweb.de/floater'>hgsweb.de/floater</a>
 
-A small JavaScript file the fakes table headers 
-by copying content from TH cells into DIVs .
-
-These DIVs are at the same absolute left position as the 
-corresponding TH.
-
-When the original table header is scrolled out of view 
-the fake header is scrolled into view at the very top of the table
-and disapears when the eintire tabel is scroled out of view , 
-or the original header comes back into view.
-
-In addition to this you can now specify how many columns
-from the left edge of the table should be moved into view
-at the elft edge, if these will be scrolled out of view.
-
-*15.01.2014
-
-Added functionality to keep floating objects in sync with
-content changes inside a table. 
-
-In case rows are added or deleted the floating
-left columns have to be adjusted  
-
-In case content/geometry of columns change this has to be taken care of.
-Influenc of these changes on left columns and header columns.
-
+A small JavaScript file implementing sticky table headers and 
+sticky left columns to give you the freeze pane functionality 
+as you find it in EXCEL-Spreadsheets.
 
 For details regarding usage and implementation please see 
 files index.html and float.js 
+Avery simple overview is located at <a href='http://slides.com/heinzschweitzer/freeze#/' > Slides.com </a>
+
+
+*15.01.2014
+
+Added functionality to keep frozen and columns headers in sync with
+content and geometry changes inside related table cells. 
+
 
 As of  12.01.2014 this has been working for :
             
