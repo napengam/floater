@@ -40,7 +40,7 @@ function floatHeader(tableId, head) {
     var mytable
             , row = [], flo, myBody, scrollParent, tableParent, padding = 4
             , i, nc, nr, th, delta, debug = false, topDif = 0, leftDif = 0
-            , theHead, tlc = {style: null}, lc = {style: null}, lcw = 0, setFloAgain = true;
+            , theHead, topLeftCorner = {style: null}, theLeftColumn = {style: null}, lcw = 0, setFloAgain = true;
 
     function rotate90(tableId) {
         var aRows = document.getElementById(tableId).rows, padding = 4;
@@ -201,7 +201,7 @@ function floatHeader(tableId, head) {
         return div;
     }
     function setLeftColumnGeometry(head) {
-        setAtt(lc.style, {
+        setAtt(theLeftColumn.style, {
             top: absPos(mytable.rows[head.ncpth.length].cells[0]).y - 0 + 'px',
             left: flo.x + 'px',
             height: mytable.clientHeight - mytable.rows[head.ncpth.length].offsetTop + 'px',
@@ -209,7 +209,7 @@ function floatHeader(tableId, head) {
             position: 'absolute'});
     }
     function setTopLeftCornerGeometry() {
-        setAtt(tlc.style, {
+        setAtt(topLeftCorner.style, {
             //borderRight: '1px solid black',
             height: theHead.style.height,
             left: flo.x + 'px',
@@ -217,7 +217,7 @@ function floatHeader(tableId, head) {
             width: lcw + 1 + 'px',
             position: 'absolute'}
         );
-        theHead.rightEdge = tlc.rightEdge;
+        theHead.rightEdge = topLeftCorner.rightEdge;
     }
     function setTableHeadGeometry() {
         setAtt(theHead.style, {
@@ -262,7 +262,7 @@ function floatHeader(tableId, head) {
                 th.style.height = aCell.clientHeight + 'px';
                 if (ri < head.ncpth.length && i < head.ncpth[ri]) {// copy cells into top left corner div  
                     th = createHeaderCell(aCell, aCell.offsetTop, i);
-                    tlc.appendChild(th);
+                    topLeftCorner.appendChild(th);
                     th.style.height = aCell.clientHeight + 'px';
                 }
             }
@@ -278,7 +278,7 @@ function floatHeader(tableId, head) {
             for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
                 aCell = row.cells[i];
                 th = createLeftColumn(aCell, aCell.offsetTop - delta, i, row.rowIndex);
-                lc.appendChild(th);
+                theLeftColumn.appendChild(th);
             }
             return true; // next row
         }
@@ -316,16 +316,16 @@ function floatHeader(tableId, head) {
             leftDif = head.leftDif;
         }
 
-        tlc = createDivHead(mytable, 'float_corner', flo.x); // top left corener
-        lc = createDivLeftColumn(mytable, flo.x); //  left column      
-        tableParent.appendChild(lc);
+        topLeftCorner = createDivHead(mytable, 'float_corner', flo.x); // top left corener
+        theLeftColumn = createDivLeftColumn(mytable, flo.x); //  left column      
+        tableParent.appendChild(theLeftColumn);
 
     }
 
     tableParent.appendChild(theHead);
     nr = mytable.rows.length;
     if (head.nccol > 0) {
-        tableParent.appendChild(tlc);
+        tableParent.appendChild(topLeftCorner);
     }
     for (i = 0; i < mytable.rows.length; i++) {
         withRows(mytable.rows[i], i);
@@ -337,9 +337,9 @@ function floatHeader(tableId, head) {
         row = mytable.rows[nr - 1];
         lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
         setLeftColumnGeometry(head);
-        lc.style.display = 'none';
+        theLeftColumn.style.display = 'none';
         setTopLeftCornerGeometry();
-        tlc.style.display = 'none';
+        topLeftCorner.style.display = 'none';
     }
 
     setTableHeadGeometry();
@@ -352,8 +352,8 @@ function floatHeader(tableId, head) {
     if (debug) {
         theHead.style.display = 'block';
         if (head.nccol > 0) {
-            tlc.style.display = 'block';
-            lc.style.display = 'block';
+            topLeftCorner.style.display = 'block';
+            theLeftColumn.style.display = 'block';
         }
     }
     theHead.hsync = function (x, y) {
@@ -390,8 +390,8 @@ function floatHeader(tableId, head) {
             t.top = y + 'px';
         }
     };
-    lc.hsync = function (x, y) {
-        var t = this.style, tt = this.tlc.style;
+    theLeftColumn.hsync = function (x, y) {
+        var t = this.style, tt = this.topLeftCorner.style;
         if (t === null) {
             return;
         }
@@ -419,8 +419,8 @@ function floatHeader(tableId, head) {
             }
         }
     };
-    lc.vsync = function (x, y) {
-        var t = this.style, tt = this.tlc.style;
+    theLeftColumn.vsync = function (x, y) {
+        var t = this.style, tt = this.topLeftCorner.style;
         if (t === null) {
             return;
         }
@@ -457,8 +457,8 @@ function floatHeader(tableId, head) {
             }
         }
     };
-    lc.hsyncR = function (x, y) {
-        var t = this.style, tt = this.tlc.style;
+    theLeftColumn.hsyncR = function (x, y) {
+        var t = this.style, tt = this.topLeftCorner.style;
         if (t === null) {
             return;
         }
@@ -479,8 +479,8 @@ function floatHeader(tableId, head) {
         }
         tt.left = /*flo.x  +*/ x + 'px';
     };
-    lc.vsyncR = function (x, y) {
-        var t = this.style, tt = this.tlc.style;
+    theLeftColumn.vsyncR = function (x, y) {
+        var t = this.style, tt = this.topLeftCorner.style;
         if (t === null) {
             return;
         }
@@ -522,12 +522,12 @@ function floatHeader(tableId, head) {
         if (flo.sy !== y) {// vertical scrolling
             flo.sy = y;
             theHead.vsync(x, y);
-            lc.vsync(x, y);
+            theLeftColumn.vsync(x, y);
         }
         if (flo.sx !== x) { // horizontal scrolling
             flo.sx = x;
             theHead.hsync(x, y);
-            lc.hsync(x, y);
+            theLeftColumn.hsync(x, y);
         }
     }
     function scrollDiv(e) {
@@ -542,11 +542,11 @@ function floatHeader(tableId, head) {
         if (flo.sy !== y) {// vertical scrolling
             flo.sy = y;
             theHead.vsyncR(x, y);
-            lc.vsyncR(x, y);
+            theLeftColumn.vsyncR(x, y);
         }
         if (flo.sx !== x) { // horizontal scrolling
             flo.sx = x;
-            lc.hsyncR(x, y);
+            theLeftColumn.hsyncR(x, y);
         }
     }
     if (tableParent === document.body) {
@@ -558,7 +558,7 @@ function floatHeader(tableId, head) {
         var i, j, k, l, nr, nc, row, aCell, th;
         nr = mytable.rows.length;
         theHead.style.display = 'none';
-        theHead.tlc.style !== null ? theHead.tlc.style.display = 'none' : '';
+        theHead.topLeftCorner.style !== null ? theHead.topLeftCorner.style.display = 'none' : '';
         for (k = 0, j = 0, l = 0; k < nr; k++) {
             if (mytable.rows[k].cells[0].tagName !== 'TH') {
                 break;
@@ -570,13 +570,13 @@ function floatHeader(tableId, head) {
                 th = updateHeaderCell(theHead.childNodes[j++], aCell, aCell.offsetTop, i);
                 th.style.height = aCell.clientHeight + 'px';
                 if (k < head.ncpth.length && i < head.ncpth[k]) {// copy cells into top left corner div  
-                    th = updateHeaderCell(tlc.childNodes[l++], aCell, aCell.offsetTop, i);
+                    th = updateHeaderCell(topLeftCorner.childNodes[l++], aCell, aCell.offsetTop, i);
                     th.style.height = aCell.clientHeight + 'px';
                 }
             }
         }
         theHead.style.display = '';
-        theHead.tlc.style !== null ? theHead.tlc.style.display = 'none' : '';
+        theHead.topLeftCorner.style !== null ? theHead.topLeftCorner.style.display = 'none' : '';
     }
 
     function syncHeadAndCorner() { // method to force a new layout of pseudo header
@@ -601,18 +601,18 @@ function floatHeader(tableId, head) {
         if(mytable.tHead==null){
             nr=nr- head.ncpth.length;
         }
-        diff = nr * head.nccol - theHead.lc.childNodes.length;
-        theHead.lc.style.display = 'none'; // to avoid DOM repaint
+        diff = nr * head.nccol - theHead.theLeftColumn.childNodes.length;
+        theHead.theLeftColumn.style.display = 'none'; // to avoid DOM repaint
         if (diff > 0) {// add cells for pseudo rows
             aCell = mytable.rows[nr - 1].cells[0]; // any cell will do
             for (i = 0; i < diff; i++) { // copy content of a column cell ;
                 th = createLeftColumn(aCell, aCell.offsetTop - delta, i, nr - 1);
-                theHead.lc.appendChild(th);
+                theHead.theLeftColumn.appendChild(th);
             }
         }
         else if (diff < 0) { //delete cells of pseudo rows
             for (i = 0; i < -diff; i++) {
-                theHead.lc.removeChild(theHead.lc.childNodes[0]);
+                theHead.theLeftColumn.removeChild(theHead.theLeftColumn.childNodes[0]);
             }
         }
         syncLeftColumn();
@@ -627,9 +627,9 @@ function floatHeader(tableId, head) {
         if(mytable.tHead===null){        
             kd=head.ncpth.length;
         }
-        ntc = theHead.lc.childNodes.length;
-        tflccn = theHead.lc.childNodes;
-        theHead.lc.style.display = 'none'; // to avoid DOM repaint
+        ntc = theHead.theLeftColumn.childNodes.length;
+        tflccn = theHead.theLeftColumn.childNodes;
+        theHead.theLeftColumn.style.display = 'none'; // to avoid DOM repaint
         for (k = kd, j = 0; k < nr; k++) {
             row = mytable.tBodies[0].rows[k];
             for (i = 0; i < head.nccol && j < ntc; i++, j++) { // copy content of column cells from table   
@@ -637,7 +637,7 @@ function floatHeader(tableId, head) {
                 updateLeftColumn(tflccn[j], aCell, aCell.offsetTop - delta, i, row.rowIndex);
             }
         }
-        theHead.lc.style.display = ''; // go back to previous state
+        theHead.theLeftColumn.style.display = ''; // go back to previous state
         return;
     }
     ;
@@ -657,8 +657,8 @@ function floatHeader(tableId, head) {
 
     addEvent(scrollParent, 'scroll', theHead.scroll);
     // pointers to corner and left column;
-    theHead.tlc = tlc;
-    theHead.lc = lc;
-    lc.tlc = tlc;
+    theHead.topLeftCorner = topLeftCorner;
+    theHead.theLeftColumn = theLeftColumn;
+    theLeftColumn.topLeftCorner = topLeftCorner;
     return theHead;
 }
