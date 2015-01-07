@@ -40,7 +40,7 @@ Logic
 There are three main block of logic.
 
 <b>The first block</b> is the construction of three containers to build
-the fixed header (theHeader) , the top left corner (theLeftCorner) being the left part of theHeader 
+the header (theHeader) , the top left corner (theLeftCorner) being the left part of theHeader 
 and the header for the fixed left columns (theLeftColumns).
 
 <b>The second block</b> keeps track of horizontal and vertical scrolling of the table.
