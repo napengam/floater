@@ -598,7 +598,7 @@ function floatHeader(tableId, head) {
     function  rowAddDelete() {// add or delete 'rows'
         var diff, nr, aCell, i, aCell;
         nr = mytable.tBodies[0].rows.length;
-        if(mytable.tHead==null){
+        if(mytable.tHead===null){
             nr=nr- head.ncpth.length;
         }
         diff = nr * head.nccol - theHead.theLeftColumn.childNodes.length;
