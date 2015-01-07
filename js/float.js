@@ -288,6 +288,11 @@ function floatHeader(tableId, head) {
 ////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Main /////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+
+/**********************************************************************
+*************** FIRST BLOCK OF LOGIC: CONSTRUCTION*********************
+***********************************************************************/
+
     mytable = document.getElementById(tableId);
     myBody = document.getElementById(tableId + '_parent');
     if (myBody !== null) {
@@ -356,6 +361,12 @@ function floatHeader(tableId, head) {
             theLeftColumn.style.display = 'block';
         }
     }
+    
+/**********************************************************************
+************ SECOND BLOCK OF LOGIC: SCROLLING *************************
+***********************************************************************/
+
+
     theHead.hsync = function (x, y) {
         var t = this.style;
         if (t.position === 'fixed') {
@@ -554,6 +565,12 @@ function floatHeader(tableId, head) {
     } else {
         theHead.scroll = scrollDiv;
     }
+    
+/*********************************************************************
+*********** THIRD BLOCK OF LOGIC: SYNCHRONIZATION ********************
+***********************************************************************/
+
+
     function copyHeaderAndCorner(mytable, head) {
         var i, j, k, l, nr, nc, row, aCell, th;
         nr = mytable.rows.length;
