@@ -3,6 +3,8 @@ floater
 
 fixed/sticky header and left columns for tables
 
+Look at html/index.html  for usage
+
 A demo is located here <a href='http://hgsweb.de/floater/html'>hgsweb.de/floater</a>
 
 A small JavaScript file implementing sticky table headers and 
