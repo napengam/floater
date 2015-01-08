@@ -606,22 +606,7 @@ function floatHeader(tableId, head) {
         theHead.topLeftCorner.style !== null ? theHead.topLeftCorner.style.display = 'none' : '';
     }
 
-    function syncHeadAndCorner() { // method to force a new layout of pseudo header
-        var aCell;
-        flo = absPos(mytable);
-        copyHeaderAndCorner(mytable, head);
-        if (head.nccol > 0) {
-            rowAddDelete();
-            aCell = mytable.rows[head.ncpth.length].cells[head.nccol - 1];
-            lcw = aCell.offsetLeft + aCell.clientWidth;
-            setLeftColumnGeometry(head);
-            setTopLeftCornerGeometry();
-        }
-        setTableHeadGeometry();
-        // flo keeps all neccessary Geometry    
-        flo = setFlo(flo);
-    }
-    ;
+    
     function  rowAddDelete() {// add or delete 'rows'
         var diff, nr, aCell, i, aCell;
         nr = mytable.tBodies[0].rows.length;
@@ -667,7 +652,22 @@ function floatHeader(tableId, head) {
         theHead.theLeftColumn.style.display = ''; // go back to previous state
         return;
     }
-    ;
+    function syncHeadAndCorner() { // method to force a new layout of pseudo header
+        var aCell;
+        flo = absPos(mytable);
+        copyHeaderAndCorner(mytable, head);
+        if (head.nccol > 0) {
+            rowAddDelete();
+            aCell = mytable.rows[head.ncpth.length].cells[head.nccol - 1];
+            lcw = aCell.offsetLeft + aCell.clientWidth;
+            setLeftColumnGeometry(head);
+            setTopLeftCornerGeometry();
+        }
+        setTableHeadGeometry();
+        // flo keeps all neccessary Geometry    
+        flo = setFlo(flo);
+    }
+    
     function addEvent(obj, ev, fu) {
         if (obj.addEventListener) {
             obj.addEventListener(ev, fu, false);
