@@ -43,6 +43,10 @@ function floatHeader(tableId, head) {
             , theHead, topLeftCorner = {style: null}, theLeftColumn = {style: null}, lcw = 0, setFloAgain = true;
 
     function rotate90(tableId) {
+        // 
+        // if a TH-cell carries the data-rotate attribute 
+        // we rotate it 90 degrees counter clock wise
+        //
         var aRows = document.getElementById(tableId).rows, padding = 4;
         [].every.call(aRows, function (row) {
             if (row.cells[0].tagName !== 'TH') {
@@ -84,7 +88,7 @@ function floatHeader(tableId, head) {
             });
         }
     }
-    rotate90(tableId);
+    rotate90(tableId); // rotate header cell if any ..
 
     function setAtt(s, o) {
         var opt;
@@ -260,6 +264,9 @@ function floatHeader(tableId, head) {
                 th = createHeaderCell(aCell, aCell.offsetTop, i);
                 theHead.appendChild(th);
                 th.style.height = aCell.clientHeight + 'px';
+                if (head.nccol === 0) {
+                    continue; // header only
+                }
                 if (ri < head.ncpth.length && i < head.ncpth[ri]) {// copy cells into top left corner div  
                     th = createHeaderCell(aCell, aCell.offsetTop, i);
                     topLeftCorner.appendChild(th);
@@ -289,9 +296,9 @@ function floatHeader(tableId, head) {
 ///////////////////////////// Main /////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-/**********************************************************************
-*************** FIRST BLOCK OF LOGIC: CONSTRUCTION*********************
-***********************************************************************/
+    /**********************************************************************
+     *************** FIRST BLOCK OF LOGIC: CONSTRUCTION*********************
+     ***********************************************************************/
 
     mytable = document.getElementById(tableId);
     myBody = document.getElementById(tableId + '_parent');
@@ -304,13 +311,11 @@ function floatHeader(tableId, head) {
     }
 
     head = head || {};
-    flo = absPos(mytable);
-
-    theHead = createDivHead(mytable, 'float_', flo.x); // entire header
     if (typeof head.ncpth === 'undefined') {
         head.ncpth = [];
         head.nccol = 0; // default  
         head.topDif = 0;
+        head.leftDif = 0;
     } else {
         topDif = 0;
         if (typeof head.topDif !== 'undefined') {
@@ -320,36 +325,41 @@ function floatHeader(tableId, head) {
         if (typeof head.leftDif !== 'undefined') {
             leftDif = head.leftDif;
         }
-
-        topLeftCorner = createDivHead(mytable, 'float_corner', flo.x); // top left corener
-        theLeftColumn = createDivLeftColumn(mytable, flo.x); //  left column      
-        tableParent.appendChild(theLeftColumn);
-
     }
-
+    //
+    /// create necessary containers
+    //
+    flo = absPos(mytable);
+    theHead = createDivHead(mytable, 'float_', flo.x); //container for  entire header
     tableParent.appendChild(theHead);
-    nr = mytable.rows.length;
     if (head.nccol > 0) {
+        topLeftCorner = createDivHead(mytable, 'float_corner', flo.x); //container top left corener
         tableParent.appendChild(topLeftCorner);
+        theLeftColumn = createDivLeftColumn(mytable, flo.x); //container  left column      
+        tableParent.appendChild(theLeftColumn);
     }
+    //
+    // fill container with cells
+    //
     for (i = 0; i < mytable.rows.length; i++) {
-        withRows(mytable.rows[i], i);
+        withRows(mytable.rows[i], i); // fill'em up
     }
-
-    nr = mytable.rows.length;
-    nc = mytable.rows[nr - 1].cells.length;
+    //
+    // set all geometry and container positions we need, hide them
+    //
+    setTableHeadGeometry();
+    theHead.style.display = 'none';
     if (head.nccol > 0) {
-        row = mytable.rows[nr - 1];
+        row = mytable.rows[mytable.rows.length - 1];
         lcw = row.cells[head.nccol - 1].offsetLeft + row.cells[head.nccol - 1].clientWidth;
         setLeftColumnGeometry(head);
         theLeftColumn.style.display = 'none';
         setTopLeftCornerGeometry();
         topLeftCorner.style.display = 'none';
     }
-
-    setTableHeadGeometry();
-    theHead.style.display = 'none';
+    //
     // flo keeps all neccessary Geometry
+    //
     flo = setFlo(flo);
     if (tableParent !== document.body) {
         tableParent.style.position = 'relative';
@@ -361,10 +371,10 @@ function floatHeader(tableId, head) {
             theLeftColumn.style.display = 'block';
         }
     }
-    
-/**********************************************************************
-************ SECOND BLOCK OF LOGIC: SCROLLING *************************
-***********************************************************************/
+
+    /**********************************************************************
+     ************ SECOND BLOCK OF LOGIC: SCROLLING *************************
+     ***********************************************************************/
 
 
     theHead.hsync = function (x, y) {
@@ -565,10 +575,10 @@ function floatHeader(tableId, head) {
     } else {
         theHead.scroll = scrollDiv;
     }
-    
-/*********************************************************************
-*********** THIRD BLOCK OF LOGIC: SYNCHRONIZATION ********************
-***********************************************************************/
+
+    /*********************************************************************
+     *********** THIRD BLOCK OF LOGIC: SYNCHRONIZATION ********************
+     ***********************************************************************/
 
 
     function copyHeaderAndCorner(mytable, head) {
@@ -615,8 +625,8 @@ function floatHeader(tableId, head) {
     function  rowAddDelete() {// add or delete 'rows'
         var diff, nr, aCell, i, aCell;
         nr = mytable.tBodies[0].rows.length;
-        if(mytable.tHead===null){
-            nr=nr- head.ncpth.length;
+        if (mytable.tHead === null) {
+            nr = nr - head.ncpth.length;
         }
         diff = nr * head.nccol - theHead.theLeftColumn.childNodes.length;
         theHead.theLeftColumn.style.display = 'none'; // to avoid DOM repaint
@@ -636,13 +646,13 @@ function floatHeader(tableId, head) {
     }
     ;
     function syncLeftColumn() {
-        var nr, aCell, j, k,kd=0, i, ntc, tflccn;
+        var nr, aCell, j, k, kd = 0, i, ntc, tflccn;
         //////////////////////////////
         /// brute force sync/rearange left columns
         /// //////////////////////////
         nr = mytable.tBodies[0].rows.length;
-        if(mytable.tHead===null){        
-            kd=head.ncpth.length;
+        if (mytable.tHead === null) {
+            kd = head.ncpth.length;
         }
         ntc = theHead.theLeftColumn.childNodes.length;
         tflccn = theHead.theLeftColumn.childNodes;
