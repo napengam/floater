@@ -252,45 +252,49 @@ function floatHeader(tableId, head) {
         flo.sy = -1;
         return flo;
     }
-    function withRows(row, ri) {
-        var aCell, i, th;
-        if (row.cells[0].tagName === 'TH') {
-            ///////////////////////
-            //// header column cells  only
-            ///////////////////////
-            nc = row.cells.length;
-            for (i = 0; i < nc; i++) { // copy content of header cells from table   
-                aCell = row.cells[i];
-                th = createHeaderCell(aCell, aCell.offsetTop, i);
-                theHead.appendChild(th);
-                th.style.height = aCell.clientHeight + 'px';
-                if (head.nccol === 0) {
-                    continue; // header only
-                }
-                if (ri < head.ncpth.length && i < head.ncpth[ri]) {// copy cells into top left corner div  
+
+    function fillContainers() {
+        var row, aCell, i, ri, th;
+        for (ri = 0; ri < mytable.rows.length; ri++) {
+            row = mytable.rows[ri];
+            if (ri < head.ncpth.length ) {
+                ///////////////////////
+                //// header column cells  now
+                ///////////////////////
+                nc = row.cells.length;
+                for (i = 0; i < nc; i++) { // copy content of header cells from table   
+                    aCell = row.cells[i];
                     th = createHeaderCell(aCell, aCell.offsetTop, i);
-                    topLeftCorner.appendChild(th);
+                    theHead.appendChild(th);
                     th.style.height = aCell.clientHeight + 'px';
+                    if (head.nccol === 0) {
+                        continue; // header only
+                    }
+                    if (i < head.ncpth[ri]) {// copy cells into top left corner div  
+                        th = createHeaderCell(aCell, aCell.offsetTop, i);
+                        topLeftCorner.appendChild(th);
+                        th.style.height = aCell.clientHeight + 'px';
+                    }
                 }
+                theHead.style.height = row.offsetTop + row.clientHeight + 'px';
+                theHead.rightEdge = 0;
+                continue;
             }
-            theHead.style.height = row.offsetTop + row.clientHeight + 'px';
-            theHead.rightEdge = 0;
-            return true; // next row
-        }
-        ///////////////////////
-        //// left column cells  only
-        ///////////////////////
-        if (head.nccol > 0) {
-            delta = mytable.rows[head.ncpth.length].offsetTop;
-            for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
-                aCell = row.cells[i];
-                th = createLeftColumn(aCell, aCell.offsetTop - delta, i, row.rowIndex);
-                theLeftColumn.appendChild(th);
+            ///////////////////////
+            //// left column cells  now
+            ///////////////////////
+            if (head.nccol > 0) {
+                delta = mytable.rows[head.ncpth.length].offsetTop;
+                for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
+                    aCell = row.cells[i];
+                    th = createLeftColumn(aCell, aCell.offsetTop - delta, i, row.rowIndex);
+                    theLeftColumn.appendChild(th);
+                }
+            } else {
+                break; // header only we are done 
             }
-            return true; // next row
         }
-        return false; // stop every;
-    }
+    }   
 
 ////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Main /////////////////////////////////////
@@ -341,9 +345,7 @@ function floatHeader(tableId, head) {
     //
     // fill container with cells
     //
-    for (i = 0; i < mytable.rows.length; i++) {
-        withRows(mytable.rows[i], i); // fill'em up
-    }
+    fillContainers();
     //
     // set all geometry and container positions we need, hide them
     //
@@ -377,6 +379,7 @@ function floatHeader(tableId, head) {
      ***********************************************************************/
 
 
+
     theHead.hsync = function (x, y) {
         var t = this.style;
         if (t.position === 'fixed') {
@@ -396,19 +399,6 @@ function floatHeader(tableId, head) {
             t.position = 'fixed';
             t.left = flo.x - x + leftDif + 'px';
             t.top = topDif + 'px';
-        }
-    };
-    theHead.vsyncR = function (x, y) {
-        var t = this.style;
-        if ((y - 1 < flo.y || y > flo.bottom)) {
-            t.display !== 'none' ? t.display = 'none' : '';
-            return;
-        }
-        t.display === 'none' ? t.display = '' : '';
-        if (t.display !== 'none') {
-            t.position !== 'absolute' ? t.position = 'absolute' : '';
-            t.left = flo.x + 'px';
-            t.top = y + 'px';
         }
     };
     theLeftColumn.hsync = function (x, y) {
@@ -476,6 +466,19 @@ function floatHeader(tableId, head) {
                     tt.left = x + 'px';
                 }
             }
+        }
+    };
+    theHead.vsyncR = function (x, y) {
+        var t = this.style;
+        if ((y - 1 < flo.y || y > flo.bottom)) {
+            t.display !== 'none' ? t.display = 'none' : '';
+            return;
+        }
+        t.display === 'none' ? t.display = '' : '';
+        if (t.display !== 'none') {
+            t.position !== 'absolute' ? t.position = 'absolute' : '';
+            t.left = flo.x + 'px';
+            t.top = y + 'px';
         }
     };
     theLeftColumn.hsyncR = function (x, y) {
@@ -606,8 +609,12 @@ function floatHeader(tableId, head) {
         theHead.topLeftCorner.style !== null ? theHead.topLeftCorner.style.display = 'none' : '';
     }
 
-    
-    function  rowAddDelete() {// add or delete 'rows'
+
+    function  rowAddDelete() {
+        //
+        // check if rows have been added or deleted  
+        // from original table.
+        //                 
         var diff, nr, aCell, i, aCell;
         nr = mytable.tBodies[0].rows.length;
         if (mytable.tHead === null) {
@@ -667,7 +674,7 @@ function floatHeader(tableId, head) {
         // flo keeps all neccessary Geometry    
         flo = setFlo(flo);
     }
-    
+
     function addEvent(obj, ev, fu) {
         if (obj.addEventListener) {
             obj.addEventListener(ev, fu, false);
