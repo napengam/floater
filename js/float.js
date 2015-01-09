@@ -379,7 +379,9 @@ function floatHeader(tableId, head) {
      ***********************************************************************/
 
 
-
+    //////////////////////////////////////////////////////////
+    // functions called when scrolling within the document
+    ///////////////////////////////////////////////////////////
     theHead.hsync = function (x, y) {
         var t = this.style;
         if (t.position === 'fixed') {
@@ -468,6 +470,11 @@ function floatHeader(tableId, head) {
             }
         }
     };
+
+    //////////////////////////////////////////////////////
+    // functions called when scrolling within a div 
+    //////////////////////////////////////////////////////
+
     theHead.vsyncR = function (x, y) {
         var t = this.style;
         if ((y - 1 < flo.y || y > flo.bottom)) {
@@ -531,7 +538,7 @@ function floatHeader(tableId, head) {
         var dd = document.getElementById('debug');
         dd.innerHTML = 'wo=' + w + '    tt.top=' + tt.top + '  tt.left=' + tt.left + ' t.top=' + t.top + '  t.left=' + t.left;
     }
-    function scrollBody() {
+    function scrollBody() { //////// scrolling in documnet
         var y, x;
         y = window.pageYOffset + topDif;
         x = window.pageXOffset + leftDif;
@@ -554,7 +561,7 @@ function floatHeader(tableId, head) {
             theLeftColumn.hsync(x, y);
         }
     }
-    function scrollDiv(e) {
+    function scrollDiv(e) { //////// scrolling in DIV
         var y, x;
         if (typeof e !== 'undefined') {
             y = e.target.scrollTop;
@@ -573,15 +580,22 @@ function floatHeader(tableId, head) {
             theLeftColumn.hsyncR(x, y);
         }
     }
+    
+    /************************************************
+     ********  assign scrolling callback  
+     ***********************************************/
+       
     if (tableParent === document.body) {
         theHead.scroll = scrollBody;
     } else {
         theHead.scroll = scrollDiv;
     }
 
-    /*********************************************************************
+    /**
+     ********************************************************************
      *********** THIRD BLOCK OF LOGIC: SYNCHRONIZATION ********************
-     ***********************************************************************/
+     **********************************************************************
+     **/
 
 
     function copyHeaderAndCorner(mytable, head) {
@@ -679,17 +693,31 @@ function floatHeader(tableId, head) {
             obj.attachEvent('on' + ev, fu);
         }
     }
-    theHead.sync = function (ri, what) {
+    //
+    //  the sync function can be called by the consumer of this module
+    //  to trigger a complete rebuild of theHead topLeftCorner and theLeftColumns  
+    //
+    theHead.sync = function () {
         syncHeadAndCorner();
         flo.sx = -1;
         flo.sy = -1;
         theHead.scroll();
     };
 
+    /***************************************************
+     * --------------- THE END ------------------------
+     ***************************************************/
+
+
+    // the scroll event enters here and rippels up :-)
+
     addEvent(scrollParent, 'scroll', theHead.scroll);
+
     // pointers to corner and left column;
+
     theHead.topLeftCorner = topLeftCorner;
     theHead.theLeftColumn = theLeftColumn;
     theLeftColumn.topLeftCorner = topLeftCorner;
+
     return theHead;
 }
