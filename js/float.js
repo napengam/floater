@@ -230,7 +230,7 @@ function floatHeader(tableId, head) {
             width: mytable.clientWidth + 'px',
             position: 'absolute'});
     }
-    function setFlo(flo) {
+    function setFlo(flo) { // flo are our 'floating/sticky' objects
         var nr, nc;
         flo.dx = 0;
         flo.dy = 0;
@@ -257,7 +257,7 @@ function floatHeader(tableId, head) {
         var row, aCell, i, ri, th;
         for (ri = 0; ri < mytable.rows.length; ri++) {
             row = mytable.rows[ri];
-            if (ri < head.ncpth.length ) {
+            if (ri < head.ncpth.length) {
                 ///////////////////////
                 //// header column cells  now
                 ///////////////////////
@@ -294,7 +294,7 @@ function floatHeader(tableId, head) {
                 break; // header only we are done 
             }
         }
-    }   
+    }
 
 ////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Main /////////////////////////////////////
@@ -586,20 +586,18 @@ function floatHeader(tableId, head) {
 
     function copyHeaderAndCorner(mytable, head) {
         var i, j, k, l, nr, nc, row, aCell, th;
-        nr = mytable.rows.length;
+
+        nr = head.ncpth.length;
         theHead.style.display = 'none';
         theHead.topLeftCorner.style !== null ? theHead.topLeftCorner.style.display = 'none' : '';
         for (k = 0, j = 0, l = 0; k < nr; k++) {
-            if (mytable.rows[k].cells[0].tagName !== 'TH') {
-                break;
-            }
             row = mytable.rows[k];
             nc = row.cells.length;
             for (i = 0; i < nc; i++) { // copy content of header cells from table   
                 aCell = row.cells[i];
                 th = updateHeaderCell(theHead.childNodes[j++], aCell, aCell.offsetTop, i);
                 th.style.height = aCell.clientHeight + 'px';
-                if (k < head.ncpth.length && i < head.ncpth[k]) {// copy cells into top left corner div  
+                if (i < head.ncpth[k]) {// copy cells into top left corner div  
                     th = updateHeaderCell(topLeftCorner.childNodes[l++], aCell, aCell.offsetTop, i);
                     th.style.height = aCell.clientHeight + 'px';
                 }
@@ -628,8 +626,7 @@ function floatHeader(tableId, head) {
                 th = createLeftColumn(aCell, aCell.offsetTop - delta, i, nr - 1);
                 theHead.theLeftColumn.appendChild(th);
             }
-        }
-        else if (diff < 0) { //delete cells of pseudo rows
+        } else if (diff < 0) { //delete cells of pseudo rows
             for (i = 0; i < -diff; i++) {
                 theHead.theLeftColumn.removeChild(theHead.theLeftColumn.childNodes[0]);
             }
