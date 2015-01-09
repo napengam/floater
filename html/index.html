@@ -21,16 +21,10 @@
                 fr1 = document.getElementById('frame1');
                 fr1.style.width = '600px';
                 fr1.style.height = '400px';
-               
-                 //rotateHeadCell('t1');
                 tt1 = floatHeader('t1', {ncpth: [1, 2], nccol: 2});
-                tt2 = floatHeader('t2');
+                tt2 = floatHeader('t2', {ncpth: [0]});
                 tt3 = floatHeader('t3', {ncpth: [1], nccol: 1});
-                tt4 = floatHeader('t4', {ncpth: [1], nccol: 1});
-
-             
-
-
+                tt4 = floatHeader('t4', {ncpth: [1], nccol: 1});           
             });
             function delRow() {
                 var t, i = document.getElementById('value').value * 1;
