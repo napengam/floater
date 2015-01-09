@@ -23,17 +23,6 @@
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  ***************************************************************************/
 
-/*//////////////////////////////////////////////////////////////
- Creates divs to mimic the table header.
- 
- This header is allways displayed at the top of the table, if
- the original header is scrolled out of view.
- 
- To use this function your table must have an id speficied.
- Once alle tables are rendered you call floatHeader(tableId,head),
- this returns the header object.
- 
- /////////////////////////////////////////////////////////////*/
 
 function floatHeader(tableId, head) {
     'use strict';
@@ -382,6 +371,7 @@ function floatHeader(tableId, head) {
     //////////////////////////////////////////////////////////
     // functions called when scrolling within the document
     ///////////////////////////////////////////////////////////
+    
     theHead.hsync = function (x, y) {
         var t = this.style;
         if (t.position === 'fixed') {
