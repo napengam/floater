@@ -28,8 +28,9 @@ function floatHeader(tableId, head) {
     'use strict';
     var mytable
             , row = [], flo, myBody, scrollParent, tableParent, padding = 4
-            , i, nc, nr, th, delta, debug = false, topDif = 0, leftDif = 0
-            , theHead, topLeftCorner = {style: null}, theLeftColumn = {style: null}, lcw = 0, setFloAgain = true;
+            , debug = false, topDif = 0, leftDif = 0
+            , theHead, topLeftCorner = {style: null}, theLeftColumn = {style: null}
+    , lcw = 0, setFloAgain = true;
 
     function rotate90(tableId) {
         // 
@@ -73,11 +74,10 @@ function floatHeader(tableId, head) {
                 dd.style.top = (cell.clientHeight - dd.clientHeight - padding) / 2 + 'px';
                 dd.style.left = '0px';
                 dd.style.position = 'relative';
-
             });
         }
     }
-    rotate90(tableId); // rotate header cell if any ..
+
 
     function setAtt(s, o) {
         var opt;
@@ -243,7 +243,7 @@ function floatHeader(tableId, head) {
     }
 
     function fillContainers() {
-        var row, aCell, i, ri, th;
+        var row, aCell, i, ri, th, nc, delta;
         for (ri = 0; ri < mytable.rows.length; ri++) {
             row = mytable.rows[ri];
             if (ri < head.ncpth.length) {
@@ -293,12 +293,16 @@ function floatHeader(tableId, head) {
      *************** FIRST BLOCK OF LOGIC: CONSTRUCTION*********************
      ***********************************************************************/
 
-    mytable = document.getElementById(tableId);
+    rotate90(tableId); // rotate header cell if any ..
+
+    //
+    // who is the parent of the table ?
+    //
     myBody = document.getElementById(tableId + '_parent');
-    if (myBody !== null) {
+    if (myBody !== null) { // scrolling within a DIV
         tableParent = myBody;
         scrollParent = tableParent;
-    } else {
+    } else { // scrolling within document
         tableParent = document.body;
         scrollParent = window;
     }
@@ -322,6 +326,7 @@ function floatHeader(tableId, head) {
     //
     /// create necessary containers
     //
+    mytable = document.getElementById(tableId);
     flo = absPos(mytable);
     theHead = createDivHead(mytable, 'float_', flo.x); //container for  entire header
     tableParent.appendChild(theHead);
@@ -371,7 +376,7 @@ function floatHeader(tableId, head) {
     //////////////////////////////////////////////////////////
     // functions called when scrolling within the document
     ///////////////////////////////////////////////////////////
-    
+
     theHead.hsync = function (x, y) {
         var t = this.style;
         if (t.position === 'fixed') {
@@ -570,11 +575,11 @@ function floatHeader(tableId, head) {
             theLeftColumn.hsyncR(x, y);
         }
     }
-    
+
     /************************************************
      ********  assign scrolling callback  
      ***********************************************/
-       
+
     if (tableParent === document.body) {
         theHead.scroll = scrollBody;
     } else {
@@ -617,7 +622,7 @@ function floatHeader(tableId, head) {
         // check if rows have been added or deleted  
         // from original table.
         //                 
-        var diff, nr, aCell, i, aCell;
+        var diff, nr, aCell, i, aCell, th, delta;
         nr = mytable.tBodies[0].rows.length;
         if (mytable.tHead === null) {
             nr = nr - head.ncpth.length;
@@ -626,6 +631,7 @@ function floatHeader(tableId, head) {
         theHead.theLeftColumn.style.display = 'none'; // to avoid DOM repaint
         if (diff > 0) {// add cells for pseudo rows
             aCell = mytable.rows[nr - 1].cells[0]; // any cell will do
+            delta = mytable.rows[head.ncpth.length].offsetTop;
             for (i = 0; i < diff; i++) { // copy content of a column cell ;
                 th = createLeftColumn(aCell, aCell.offsetTop - delta, i, nr - 1);
                 theHead.theLeftColumn.appendChild(th);
@@ -639,7 +645,7 @@ function floatHeader(tableId, head) {
     }
     ;
     function syncLeftColumn() {
-        var nr, aCell, j, k, kd = 0, i, ntc, tflccn;
+        var nr, aCell, j, k, kd = 0, i, ntc, tflccn, delta;
         //////////////////////////////
         /// brute force sync/rearange left columns
         /// //////////////////////////
@@ -650,6 +656,7 @@ function floatHeader(tableId, head) {
         ntc = theHead.theLeftColumn.childNodes.length;
         tflccn = theHead.theLeftColumn.childNodes;
         theHead.theLeftColumn.style.display = 'none'; // to avoid DOM repaint
+        delta = mytable.rows[head.ncpth.length].offsetTop;
         for (k = kd, j = 0; k < nr; k++) {
             row = mytable.tBodies[0].rows[k];
             for (i = 0; i < head.nccol && j < ntc; i++, j++) { // copy content of column cells from table   
