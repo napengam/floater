@@ -53,7 +53,7 @@ so they will stay in view. The position value of theLeftColumns will be set to a
 When scrolling horizontaly the position value for theLeftColumns and theLeftCorner will change to fixed so 
 they will stay in view. The position value of theHeader will be set to absolute so it will scroll horizontaly. 
 
-To visualise this somehow look at an other <a href='http://hgsweb.de/floater/demo/demo.html'> demo page</a> trying to show these positional changes
+To visualise this somehow look at an other <a href='http://hgsweb.de/floater/html/demo.html'> demo page</a> trying to show these positional changes
 
     
 <b>The third block</b> is to synchronize all three container if any changes to the table layout happens, or the
