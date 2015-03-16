@@ -9,6 +9,7 @@
     background-image: url("../icons/stripes.gif"); 
     background-repeat:repeat;
     font-family:'Courier New',Courier,monospace;
+    box-shadow: 7px 7px 8px -0px rgba(140,140,140,1);
 }
 .floatHead{            
     margin:0;
@@ -24,6 +25,7 @@
     background-image: url("../icons/stripes.gif"); 
     background-repeat:repeat;
     font-family:'Courier New',Courier,monospace;
+    box-shadow: 0px 7px 8px -2px rgba(140,140,140,1);
 }
 
 .floatCorner{            
@@ -40,7 +42,7 @@
     background-image: url("../icons/stripes.gif"); 
     background-repeat:repeat;
     font-family:'Courier New',Courier,monospace;
-
+    box-shadow: 7px 7px 5px -0px rgba(140,140,140,1);
 }
 .floatCol{            
     margin:0;
@@ -52,12 +54,16 @@
     border: 0px solid black;    
     font-family: 'Courier New',Courier,monospace;
     background-image: url("../icons/stripes.gif"); 
+    font-size:0.8em;  
+    box-shadow: 7px 0px 8px -1px rgba(140,140,140,1);
 }
-
+.floatHead  span{
+    position:absolute;
+    text-align: center; 
+    bottom:0;
+    left:0;
+    width:100%;
+}
 .table tr:hover{
     background:#edebe0;
-}
-.table, .table th, .table td {
-    border-collapse:collapse;
-    border:1px solid black;
 }
