@@ -30,13 +30,10 @@ function floatHeader(tableId, head) {
             , row = [], flo, myBody, scrollParent, tableParent, padding = 4
             , debug = false, topDif = 0, leftDif = 0
             , theHead, topLeftCorner = {style: null}, theLeftColumn = {style: null}
-    , lcw = 0, setFloAgain = true;
+    , lcw = 0, setFloAgain = true, defaultBackground = 'white';
 
-    function rotate90(tableId) {
-        // 
-        // if a TH-cell carries the data-rotate attribute 
-        // we rotate it 90 degrees counter clock wise
-        //
+    function rotateHeadCell(tableId) {
+        'use strict';
         var aRows = document.getElementById(tableId).rows, padding = 4;
         [].every.call(aRows, function (row) {
             if (row.cells[0].tagName !== 'TH') {
@@ -48,7 +45,7 @@ function floatHeader(tableId, head) {
         function rotateCell(row) {
             var maxw = -1;
             [].forEach.call(row.cells, function (cell) {
-                var w;
+                var w, dd;
                 if (!cell.hasAttribute("data-rotate")) {
                     cell.vAlign = 'bottom';
                     return;
@@ -60,24 +57,14 @@ function floatHeader(tableId, head) {
                     maxw = w;
                     cell.style.height = maxw + padding + 'px';
                 }
-                cell.firstChild.style.width = cell.firstChild.clientHeight + 'px';
-            });
-            if (maxw === -1) {
-                return;
-            }
-            [].forEach.call(row.cells, function (cell) {
-                var dd;
-                if (!cell.hasAttribute("data-rotate")) {
-                    return;
-                }
                 dd = cell.firstChild;
+                dd.style.width = cell.firstChild.clientHeight + 'px';
                 dd.style.top = (cell.clientHeight - dd.clientHeight - padding) / 2 + 'px';
                 dd.style.left = '0px';
                 dd.style.position = 'relative';
             });
         }
     }
-
 
     function setAtt(s, o) {
         var opt;
@@ -86,7 +73,30 @@ function floatHeader(tableId, head) {
         }
         return s;
     }
-
+    function findBackground(theCell) {
+        var obj,stop=false, cpStyle;
+        obj = theCell;
+        while (obj !== null ) {
+            if (obj.style.background !== '') {
+                return obj.style.background;
+            }
+            cpStyle = window.getComputedStyle(obj, null);
+            if (cpStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+                return cpStyle.backgroundColor;
+            }
+            if (cpStyle.backgroundImage !== 'none') {
+                return cpStyle.backgroundImage;
+            }
+            if(stop){
+                break;               
+            }
+            obj = obj.parentNode;
+            if (obj.id === tableId) {
+                stop=true;
+            }
+        }
+        return defaultBackground;
+    }
     function absPos(obj) {// return absolute x,y position of obj
 
         var ob, x = obj.offsetLeft, y = obj.offsetTop;
@@ -107,11 +117,12 @@ function floatHeader(tableId, head) {
             width: mytable.clientWidth + 'px',
             left: x + 'px',
             position: 'absolute',
-            background: 'black',
+            background:  findBackground(mytable),            
             display: 'none',
-            zIndex: 15
+            zIndex: 15 // above table and left column
         }
         );
+
         return div;
     }
     function createDivLeftColumn(mytable, x) {
@@ -119,13 +130,14 @@ function floatHeader(tableId, head) {
         setAtt(div, {id: 'floatleftcolumn_' + mytable.id,
             className: 'outerFloatHead'}
         );
-        setAtt(div.style, {zIndex: 12,
-            background: 'black',
+        setAtt(div.style, {zIndex: 12, // above table but below header and corner
+            background:  findBackground(mytable),         
             left: x + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px',
             position: 'absolute',
             display: 'none'}
         );
+
         return div;
     }
     function createHeaderCell(theCell, top, ci) {
@@ -136,10 +148,10 @@ function floatHeader(tableId, head) {
     function updateHeaderCell(div, theCell, top, ci) {
         var bs = '', es = '', cpStyle;
         if (!theCell.hasAttribute("data-rotate")) {
-            bs = '<span>';
+            bs = '<span style="position:absolute;bottom:0; left:0;width:100%;" >';
             es = '</span>';
         }
-        setAtt(div, {className: 'floatHead ' + theCell.className,
+        setAtt(div, {className: /*'floatHead ' + */theCell.className,
             innerHTML: bs + theCell.innerHTML + es,
             vAlign: theCell.vAlign,
             title: theCell.title,
@@ -150,7 +162,8 @@ function floatHeader(tableId, head) {
         }
         cpStyle = window.getComputedStyle(theCell, null);
         setAtt(div.style, {
-            background: theCell.style.background,
+            backgroundColor: cpStyle.backgroundColor, //theCell.style.background,
+            backgroundImage: cpStyle.backgroundImage, //theCell.style.background,
             left: theCell.offsetLeft + 'px',
             top: top + 'px',
             width: theCell.clientWidth + 'px',
@@ -160,8 +173,13 @@ function floatHeader(tableId, head) {
             borderBottom: cpStyle.borderBottomWidth + ' ' + cpStyle.borderBottomStyle + ' ' + cpStyle.borderBottomColor,
             borderRight: cpStyle.borderRightWidth + ' ' + cpStyle.borderRightStyle + ' ' + cpStyle.borderRightColor,
             fontFamily: cpStyle.fontFamily,
-            fontSize: cpStyle.fontSize
+            fontSize: cpStyle.fontSize,
+            fontWeight: cpStyle.fontWeight
+
         });
+        if (div.style.backgroundColor === 'rgba(0, 0, 0, 0)' && div.style.backgroundImage === 'none') {
+            div.style.background = findBackground(theCell);
+        }
         return div;
     }
     function createLeftColumn(theCell, top, ci, ri) {
@@ -171,14 +189,15 @@ function floatHeader(tableId, head) {
     }
     function updateLeftColumn(div, theCell, top, ci, ri) {
         var cpStyle;
-        setAtt(div, {className: 'floatCol ' + theCell.className + ' ' + theCell.parentNode.className,
+        setAtt(div, {className: /* 'floatCol ' + */theCell.className + ' ' + theCell.parentNode.className,
             innerHTML: theCell.innerHTML,
             cellIndex: ci,
             rowIndex: ri}
         );
         cpStyle = window.getComputedStyle(theCell, null);
         setAtt(div.style, {
-            background: theCell.style.background,
+            background: cpStyle.background,//theCell.style.background,
+            backgroundImage: cpStyle.backgroundImage, //theCell.style.background,
             left: theCell.offsetLeft + 'px',
             top: top + 'px',
             width: theCell.clientWidth + 'px',
@@ -189,8 +208,12 @@ function floatHeader(tableId, head) {
             borderRight: cpStyle.borderRightWidth + ' ' + cpStyle.borderRightStyle + ' ' + cpStyle.borderRightColor,
             fontFamily: cpStyle.fontFamily,
             fontSize: cpStyle.fontSize,
-            position: 'absolute'}
+            position: 'absolute',
+            fontWeight: cpStyle.fontWeight}
         );
+        if (div.style.backgroundColor === 'rgba(0, 0, 0, 0)'  && div.style.backgroundImage === 'none') {
+            div.style.background = findBackground(theCell);
+        }
         return div;
     }
     function setLeftColumnGeometry(head) {
@@ -293,16 +316,16 @@ function floatHeader(tableId, head) {
      *************** FIRST BLOCK OF LOGIC: CONSTRUCTION*********************
      ***********************************************************************/
 
-    rotate90(tableId); // rotate header cell if any ..
+    rotateHeadCell(tableId); // rotate header cell if any ..
 
     //
     // who is the parent of the table ?
     //
     myBody = document.getElementById(tableId + '_parent');
-    if (myBody !== null) { // scrolling within a DIV
+    if (myBody !== null) {
         tableParent = myBody;
         scrollParent = tableParent;
-    } else { // scrolling within document
+    } else {
         tableParent = document.body;
         scrollParent = window;
     }
@@ -606,7 +629,7 @@ function floatHeader(tableId, head) {
                 aCell = row.cells[i];
                 th = updateHeaderCell(theHead.childNodes[j++], aCell, aCell.offsetTop, i);
                 th.style.height = aCell.clientHeight + 'px';
-                if (i < head.ncpth[k]) {// copy cells into top left corner div  
+                if (i < head.ncpth[k] && head.nccol > 0) {// copy cells into top left corner div  
                     th = updateHeaderCell(topLeftCorner.childNodes[l++], aCell, aCell.offsetTop, i);
                     th.style.height = aCell.clientHeight + 'px';
                 }
@@ -696,8 +719,13 @@ function floatHeader(tableId, head) {
     //
     theHead.sync = function () {
         syncHeadAndCorner();
-        flo.sx = -1;
-        flo.sy = -1;
+        theHead.style.display = 'none';
+        if (topLeftCorner.style !== null) {
+            topLeftCorner.style.display = 'none';
+            theLeftColumn.style.display = 'none';
+        }
+        flo.sx = leftDif;
+        flo.sy = topDif;
         theHead.scroll();
     };
 
