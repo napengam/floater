@@ -151,7 +151,7 @@ function floatHeader(tableId, head) {
             bs = '<span style="position:absolute;bottom:0; left:0;width:100%;" >';
             es = '</span>';
         }
-        setAtt(div, {className: /*'floatHead ' + */theCell.className,
+        setAtt(div, {className: 'floatHead ' + theCell.className,
             innerHTML: bs + theCell.innerHTML + es,
             vAlign: theCell.vAlign,
             title: theCell.title,
@@ -189,7 +189,7 @@ function floatHeader(tableId, head) {
     }
     function updateLeftColumn(div, theCell, top, ci, ri) {
         var cpStyle;
-        setAtt(div, {className: /* 'floatCol ' + */theCell.className + ' ' + theCell.parentNode.className,
+        setAtt(div, {className: 'floatCol ' + theCell.className + ' ' + theCell.parentNode.className,
             innerHTML: theCell.innerHTML,
             cellIndex: ci,
             rowIndex: ri}
