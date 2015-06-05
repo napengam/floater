@@ -1,4 +1,5 @@
-/*************************************************************************
+/*
+ * ************************************************************************
  float.js 1.0 Copyright (c) 2013 - 2015 Heinrich Schweitzer
  Contact me at hgs@hgsweb.de
  This copyright notice MUST stay intact for use.
@@ -21,8 +22,8 @@
  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- ***************************************************************************/
-
+ **************************************************************************
+ **/
 
 function floatHeader(tableId, head) {
     'use strict';
@@ -32,7 +33,7 @@ function floatHeader(tableId, head) {
             , theHead, topLeftCorner = {style: null}, theLeftColumn = {style: null}
     , lcw = 0, setFloAgain = true, defaultBackground = 'white';
 
-    function rotateHeadCell(tableId) {
+    function rotate90(tableId) {
         'use strict';
         var aRows = document.getElementById(tableId).rows, padding = 4;
         [].every.call(aRows, function (row) {
@@ -65,6 +66,7 @@ function floatHeader(tableId, head) {
             });
         }
     }
+    rotate90(tableId); // rotate header cell if any ..
 
     function setAtt(s, o) {
         var opt;
@@ -74,9 +76,9 @@ function floatHeader(tableId, head) {
         return s;
     }
     function findBackground(theCell) {
-        var obj,stop=false, cpStyle;
+        var obj, stop = false, cpStyle;
         obj = theCell;
-        while (obj !== null ) {
+        while (obj !== null) {
             if (obj.style.background !== '') {
                 return obj.style.background;
             }
@@ -87,12 +89,12 @@ function floatHeader(tableId, head) {
             if (cpStyle.backgroundImage !== 'none') {
                 return cpStyle.backgroundImage;
             }
-            if(stop){
-                break;               
+            if (stop) {
+                break;
             }
             obj = obj.parentNode;
             if (obj.id === tableId) {
-                stop=true;
+                stop = true;
             }
         }
         return defaultBackground;
@@ -117,7 +119,7 @@ function floatHeader(tableId, head) {
             width: mytable.clientWidth + 'px',
             left: x + 'px',
             position: 'absolute',
-            background:  findBackground(mytable),            
+            background: findBackground(mytable),
             display: 'none',
             zIndex: 15 // above table and left column
         }
@@ -131,7 +133,7 @@ function floatHeader(tableId, head) {
             className: 'outerFloatHead'}
         );
         setAtt(div.style, {zIndex: 12, // above table but below header and corner
-            background:  findBackground(mytable),         
+            background: findBackground(mytable),
             left: x + 'px',
             height: mytable.rows[0].cells[0].clientHeight + 'px',
             position: 'absolute',
@@ -151,7 +153,7 @@ function floatHeader(tableId, head) {
             bs = '<span style="position:absolute;bottom:0; left:0;width:100%;" >';
             es = '</span>';
         }
-        setAtt(div, {className: 'floatHead ' + theCell.className,
+        setAtt(div, {className: /*'floatHead ' + */theCell.className,
             innerHTML: bs + theCell.innerHTML + es,
             vAlign: theCell.vAlign,
             title: theCell.title,
@@ -189,14 +191,14 @@ function floatHeader(tableId, head) {
     }
     function updateLeftColumn(div, theCell, top, ci, ri) {
         var cpStyle;
-        setAtt(div, {className: 'floatCol ' + theCell.className + ' ' + theCell.parentNode.className,
+        setAtt(div, {className: /* 'floatCol ' + */theCell.className + ' ' + theCell.parentNode.className,
             innerHTML: theCell.innerHTML,
             cellIndex: ci,
             rowIndex: ri}
         );
         cpStyle = window.getComputedStyle(theCell, null);
         setAtt(div.style, {
-            background: cpStyle.background,//theCell.style.background,
+            background: cpStyle.background, //theCell.style.background,
             backgroundImage: cpStyle.backgroundImage, //theCell.style.background,
             left: theCell.offsetLeft + 'px',
             top: top + 'px',
@@ -211,7 +213,7 @@ function floatHeader(tableId, head) {
             position: 'absolute',
             fontWeight: cpStyle.fontWeight}
         );
-        if (div.style.backgroundColor === 'rgba(0, 0, 0, 0)'  && div.style.backgroundImage === 'none') {
+        if (div.style.backgroundColor === 'rgba(0, 0, 0, 0)' && div.style.backgroundImage === 'none') {
             div.style.background = findBackground(theCell);
         }
         return div;
@@ -266,8 +268,13 @@ function floatHeader(tableId, head) {
     }
 
     function fillContainers() {
-        var row, aCell, i, ri, th, nc, delta;
-        for (ri = 0; ri < mytable.rows.length; ri++) {
+        var row, aCell, i, ri, th, nc, delta,l;
+        
+        l=mytable.rows.length;
+        if(head.nccol===0){
+            l=head.ncpth.length;
+        }
+        for (ri = 0; ri < l; ri++) {
             row = mytable.rows[ri];
             if (ri < head.ncpth.length) {
                 ///////////////////////
@@ -316,11 +323,7 @@ function floatHeader(tableId, head) {
      *************** FIRST BLOCK OF LOGIC: CONSTRUCTION*********************
      ***********************************************************************/
 
-    rotateHeadCell(tableId); // rotate header cell if any ..
-
-    //
-    // who is the parent of the table ?
-    //
+    mytable = document.getElementById(tableId);
     myBody = document.getElementById(tableId + '_parent');
     if (myBody !== null) {
         tableParent = myBody;
@@ -717,8 +720,10 @@ function floatHeader(tableId, head) {
     //  the sync function can be called by the consumer of this module
     //  to trigger a complete rebuild of theHead topLeftCorner and theLeftColumns  
     //
-    theHead.sync = function () {
-        syncHeadAndCorner();
+    theHead.sync = function (other) {
+        var otherFloats;
+
+        syncHeadAndCorner();//
         theHead.style.display = 'none';
         if (topLeftCorner.style !== null) {
             topLeftCorner.style.display = 'none';
@@ -727,6 +732,17 @@ function floatHeader(tableId, head) {
         flo.sx = leftDif;
         flo.sy = topDif;
         theHead.scroll();
+        //-
+        // hack to call sync of other tgrid tables
+        //
+        if (typeof other === 'undefined') {
+            otherFloats = document.querySelectorAll('.tgrid');
+            [].forEach.call(otherFloats, function (item) {
+                if (item !== mytable) {
+                    item.floater.sync(false);                   
+                }
+            });
+        }
     };
 
     /***************************************************
@@ -734,12 +750,12 @@ function floatHeader(tableId, head) {
      ***************************************************/
 
 
-    // the scroll event enters here and rippels up :-)
+    // the scroll event enters here and rippels up :-) 
 
     addEvent(scrollParent, 'scroll', theHead.scroll);
 
     // pointers to corner and left column;
-
+    mytable.floater = theHead;
     theHead.topLeftCorner = topLeftCorner;
     theHead.theLeftColumn = theLeftColumn;
     theLeftColumn.topLeftCorner = topLeftCorner;
