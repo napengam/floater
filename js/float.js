@@ -142,11 +142,6 @@ function floatHeader(tableId, head) {
 
         return div;
     }
-    function createHeaderCell(theCell, top, ci) {
-        var div = document.createElement('div');
-        div = updateHeaderCell(div, theCell, top, ci);
-        return div;
-    }
     function updateHeaderCell(div, theCell, top, ci) {
         var bs = '', es = '', cpStyle;
         if (!theCell.hasAttribute("data-rotate")) {
@@ -182,11 +177,6 @@ function floatHeader(tableId, head) {
         if (div.style.backgroundColor === 'rgba(0, 0, 0, 0)' && div.style.backgroundImage === 'none') {
             div.style.background = findBackground(theCell);
         }
-        return div;
-    }
-    function createLeftColumn(theCell, top, ci, ri) {
-        var div = document.createElement('div');
-        updateLeftColumn(div, theCell, top, ci, ri);
         return div;
     }
     function updateLeftColumn(div, theCell, top, ci, ri) {
@@ -268,12 +258,13 @@ function floatHeader(tableId, head) {
     }
 
     function fillContainers() {
-        var row, aCell, i, ri, th, nc, delta,l;
-        
-        l=mytable.rows.length;
-        if(head.nccol===0){
-            l=head.ncpth.length;
+        var row, aCell, i, ri, th, nc, delta, l;
+
+        l = mytable.rows.length;
+        if (head.nccol === 0) {
+            l = head.ncpth.length;
         }
+        delta = mytable.rows[head.ncpth.length].offsetTop;
         for (ri = 0; ri < l; ri++) {
             row = mytable.rows[ri];
             if (ri < head.ncpth.length) {
@@ -283,14 +274,14 @@ function floatHeader(tableId, head) {
                 nc = row.cells.length;
                 for (i = 0; i < nc; i++) { // copy content of header cells from table   
                     aCell = row.cells[i];
-                    th = createHeaderCell(aCell, aCell.offsetTop, i);
+                    th = updateHeaderCell(document.createElement('div'), aCell, aCell.offsetTop, i);
                     theHead.appendChild(th);
                     th.style.height = aCell.clientHeight + 'px';
                     if (head.nccol === 0) {
                         continue; // header only
                     }
                     if (i < head.ncpth[ri]) {// copy cells into top left corner div  
-                        th = createHeaderCell(aCell, aCell.offsetTop, i);
+                        th = updateHeaderCell(document.createElement('div'), aCell, aCell.offsetTop, i);
                         topLeftCorner.appendChild(th);
                         th.style.height = aCell.clientHeight + 'px';
                     }
@@ -302,12 +293,13 @@ function floatHeader(tableId, head) {
             ///////////////////////
             //// left column cells  now
             ///////////////////////
+
             if (head.nccol > 0) {
-                delta = mytable.rows[head.ncpth.length].offsetTop;
                 for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
-                    aCell = row.cells[i];
-                    th = createLeftColumn(aCell, aCell.offsetTop - delta, i, row.rowIndex);
+                    aCell = row.cells[i];          
+                    th = updateLeftColumn(document.createElement('div'), aCell, aCell.offsetTop - (delta), i, row.rowIndex);
                     theLeftColumn.appendChild(th);
+                    
                 }
             } else {
                 break; // header only we are done 
@@ -659,7 +651,7 @@ function floatHeader(tableId, head) {
             aCell = mytable.rows[nr - 1].cells[0]; // any cell will do
             delta = mytable.rows[head.ncpth.length].offsetTop;
             for (i = 0; i < diff; i++) { // copy content of a column cell ;
-                th = createLeftColumn(aCell, aCell.offsetTop - delta, i, nr - 1);
+                th = updateLeftColumn(document.createElement('div'), aCell, aCell.offsetTop - (delta), i, nr - 1);
                 theHead.theLeftColumn.appendChild(th);
             }
         } else if (diff < 0) { //delete cells of pseudo rows
@@ -720,6 +712,16 @@ function floatHeader(tableId, head) {
     //  the sync function can be called by the consumer of this module
     //  to trigger a complete rebuild of theHead topLeftCorner and theLeftColumns  
     //
+    theHead.move=function(){
+        flo = absPos(mytable);
+        setTableHeadGeometry();
+        setTopLeftCornerGeometry();
+        setLeftColumnGeometry(head);        
+        flo = setFlo(flo);
+        flo.sx = leftDif;
+        flo.sy = topDif;
+        theHead.scroll();
+    }
     theHead.sync = function (other) {
         var otherFloats;
 
@@ -735,11 +737,12 @@ function floatHeader(tableId, head) {
         //-
         // hack to call sync of other tgrid tables
         //
+  
         if (typeof other === 'undefined') {
             otherFloats = document.querySelectorAll('.tgrid');
             [].forEach.call(otherFloats, function (item) {
                 if (item !== mytable) {
-                    item.floater.sync(false);                   
+                    item.floater.move();
                 }
             });
         }
