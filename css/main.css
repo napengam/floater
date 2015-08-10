@@ -1,3 +1,4 @@
+/**
 @font-face {
     font-family: 'Gentium Basic';
     font-style: normal;
@@ -10,14 +11,15 @@
     font-weight: 400;
     src: local('PT Sans'), local('PTSans-Regular'), url(http://themes.googleusercontent.com/static/fonts/ptsans/v5/LKf8nhXsWg5ybwEGXk8UBQ.woff) format('woff');
 }
+**/
 html {
     font-size:1rem;
     margin:0;
     padding:0;
-    font-family: 'Gentium Basic', serif;
+   
 }
 body{ 
-    background:rgba(120, 124, 228, 0.22);
+    background:white;
     margin:0;
     padding:0;
     background-image:url(sea.JPG);
@@ -74,7 +76,7 @@ h3 {
     border-bottom:1px solid black;
     padding-left:10px;
     padding-top:10px;
-    font-family: 'PT Sans';
+   
 }
 .headLine{
     border-bottom:1px solid blue;
