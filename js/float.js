@@ -83,7 +83,7 @@ function floatHeader(tableId, head) {
                 return obj.style.background;
             }
             cpStyle = window.getComputedStyle(obj, null);
-            if (cpStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+            if (cpStyle.backgroundColor !== 'rgba(0, 0, 0, 0)' && cpStyle.backgroundColor !== 'transparent') {
                 return cpStyle.backgroundColor;
             }
             if (cpStyle.backgroundImage !== 'none') {
@@ -93,7 +93,7 @@ function floatHeader(tableId, head) {
                 break;
             }
             obj = obj.parentNode;
-            if (obj.id === tableId) {
+            if (obj.tagName === 'BODY') {
                 stop = true;
             }
         }
@@ -171,10 +171,12 @@ function floatHeader(tableId, head) {
             borderRight: cpStyle.borderRightWidth + ' ' + cpStyle.borderRightStyle + ' ' + cpStyle.borderRightColor,
             fontFamily: cpStyle.fontFamily,
             fontSize: cpStyle.fontSize,
-            fontWeight: cpStyle.fontWeight
+            fontWeight: cpStyle.fontWeight,
+            textAlign:cpStyle.textAlign
 
         });
-        if (div.style.backgroundColor === 'rgba(0, 0, 0, 0)' && div.style.backgroundImage === 'none') {
+        if ((div.style.backgroundColor === '' ||div.style.backgroundColor === 'transparent' || div.style.backgroundColor === 'rgba(0, 0, 0, 0)')
+                && div.style.backgroundImage === 'none') {
             div.style.background = findBackground(theCell);
         }
         return div;
@@ -203,7 +205,8 @@ function floatHeader(tableId, head) {
             position: 'absolute',
             fontWeight: cpStyle.fontWeight}
         );
-        if (div.style.backgroundColor === 'rgba(0, 0, 0, 0)' && div.style.backgroundImage === 'none') {
+        if ((div.style.backgroundColor === '' ||div.style.backgroundColor === 'transparent' || div.style.backgroundColor === 'rgba(0, 0, 0, 0)')
+                && div.style.backgroundImage === 'none') {
             div.style.background = findBackground(theCell);
         }
         return div;
@@ -296,10 +299,10 @@ function floatHeader(tableId, head) {
 
             if (head.nccol > 0) {
                 for (i = 0; i < head.nccol; i++) { // copy content of column cells from table   
-                    aCell = row.cells[i];          
+                    aCell = row.cells[i];
                     th = updateLeftColumn(document.createElement('div'), aCell, aCell.offsetTop - (delta), i, row.rowIndex);
                     theLeftColumn.appendChild(th);
-                    
+
                 }
             } else {
                 break; // header only we are done 
@@ -334,11 +337,21 @@ function floatHeader(tableId, head) {
     } else {
         topDif = 0;
         if (typeof head.topDif !== 'undefined') {
-            topDif = head.topDif + 0;
+            if (!isNaN(head.topDif)) {
+                topDif = head.topDif + 0;
+            } else {
+                topDif = document.getElementById(head.topDif).clientHeight - 1;
+                head.topDif = topDif + 0;
+            }
         }
         leftDif = 0;
         if (typeof head.leftDif !== 'undefined') {
-            leftDif = head.leftDif;
+            if (!isNaN(head.leftDif)) {
+                leftDif = head.leftDif + 0;
+            } else {
+                leftDif = document.getElementById(head.leftDif).clientWidth - 1;
+                head.leftDif = leftDif + 0;
+            }
         }
     }
     //
@@ -561,6 +574,7 @@ function floatHeader(tableId, head) {
             flo.y = absPos(mytable).y;
             flo.x = absPos(mytable).x;
             flo = setFlo(flo);
+            theHead.sync();
         }
 
         if (flo.sy !== y) {// vertical scrolling
@@ -712,11 +726,11 @@ function floatHeader(tableId, head) {
     //  the sync function can be called by the consumer of this module
     //  to trigger a complete rebuild of theHead topLeftCorner and theLeftColumns  
     //
-    theHead.move=function(){
+    theHead.move = function () {
         flo = absPos(mytable);
         setTableHeadGeometry();
         setTopLeftCornerGeometry();
-        setLeftColumnGeometry(head);        
+        setLeftColumnGeometry(head);
         flo = setFlo(flo);
         flo.sx = leftDif;
         flo.sy = topDif;
@@ -724,7 +738,7 @@ function floatHeader(tableId, head) {
     }
     theHead.sync = function (other) {
         var otherFloats;
-
+        setFloAgain = false;
         syncHeadAndCorner();//
         theHead.style.display = 'none';
         if (topLeftCorner.style !== null) {
@@ -733,11 +747,12 @@ function floatHeader(tableId, head) {
         }
         flo.sx = leftDif;
         flo.sy = topDif;
+
         theHead.scroll();
         //-
         // hack to call sync of other tgrid tables
         //
-  
+
         if (typeof other === 'undefined') {
             otherFloats = document.querySelectorAll('.tgrid');
             [].forEach.call(otherFloats, function (item) {
